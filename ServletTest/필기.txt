@@ -1,0 +1,106 @@
+1. 이클립스 실행
+2. 워크 스페이스
+   - "C:\class\code\server"
+3. 설정
+   a. 폰트
+   b. 인코딩
+      - Workspace
+      - CSS Files
+      - HTML Files
+      - JSP Files
+   c. 톰캣 설정
+      - Runtime Environments 
+      - Server startup in 784 ms
+4. 프로젝트 생성
+      - Dynamic Web Project
+      - Project name: "ServletTest"
+      - Target runtime: Apache Tomcat 8.5
+      - Dynamic web module version: 3.1
+      - Context Root: "ServletTest" > "servlet" : 외부 시각
+                                    > src/main/webapp : 내부 연결 경로
+
+
+Servlet, 서블릿
+- 웹서버측에서 자바를 사용한 프로그램을 동작시키는 기술(환경)
+- 목적 ? 클라이언트 요청에 따른 > 동적으로 웹페이지를 만들기 위해서!
+
+> 사용자가 페이지를 주세요하면 그 즉시 동적으로 제작해서 돌려주기 위한 기술이다.
+				
+여태 수업 페이지( HTML, CSS, JavaScript ) > 정적 HTML 페이지 > 항상 동일한 소스를 주기 때문에 내용의 변화가 없다. 
+카페로 치면 공산품 캔커피 ~ !
+
+
+지금 수업 페이지( 자바 > 위의 페이지 생산 ) 동적 HTML 페이지 > 바리스타 > 주문 
+페이지를 미리 만드는게 아니라 요청이 들어올 때마다 적합한 페이지를 그 즉시 만들어줌
+
+
+Servlet Class, 서블릿 클래스 
+- 자바 클래스
+- 서블릿 (역할 부여) == 알바생 // "이거 이거 이거는 구현해야 한다" 정한게 있다.
+ 
+Servlet Class 작성 규칙
+1. 서블릿 클래스 선언
+	a. javax.servlet.Servlet 인터페이스를 구현한다.         > 복잡하다.
+	a. javax.servlet.http.HttpServlet 클래스를 상속받는다.  > 간편하다. > 사용*** > 대부분 이걸로 쓴다.
+	   > Servlet이걸 상속받은 클래스를 미리 만들어놓음
+	   
+2. doGet / doPost 메소드 선언 
+	- 둘 중에 하나 선언 or 둘 다 선언 
+	- 클라이언트(브라우저)의 요청이 들어오면 자동으로 호출되는 메소드 
+	- doPost, doGet을 호출 ~ 동적으로 HTML 페이지를 만드는 역할
+	- 메소드 작성 규칙 
+		a. 매개 변수 작성(2개)
+			1. java.servlet.http.HttpServletRequest
+			2. java.servlet.http.HttpServletResponse
+		
+		b. 예외 미루기
+			1. java.io.IOException    // 페이지를 동적으로 생성 > 외부 입출력 
+			2. java.servletException  // 서블릿 작업 때문에 
+			
+3. 동적 HTML 문서 작성
+	- HttpServletResponse 객체의 getWriter() 메소드 호출 > PrintWriter 객체 반환
+	- PrintWriter 객체의 printXXX("<html>") 메소드를 사용 > HTML를 생성
+	- 페이지 완성 > 브라우저에게 반환 
+	
+4. 브라우저가 자바 파일(서블릿, 알바생)을 호출할 수 있는 가상 주소 매핑 
+	- web.xml
+	
+
+
+페이지 2장
+1. 데이터 전송
+	- Ex04.java
+	
+2. 데이터 수신
+	- Ex04OK.java
+ 
+POST 요청
+1. <form method="POST"> 거의 대부분이 form제출은 Post로 보낸다.
+2. XMLHttpRequest(Ajax)
+
+GET 요청
+1. <form method="GET">  
+2. XMLHttpRequest(Ajax)
+3. <a href=""> GET
+4. location.href GET
+5. F5(새로 고침) GET
+6. URL 직접입력 GET 
+
+
+Servlet 수업 끝 > 개발 환경이 불편하다. writer로 코딩해야함 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+

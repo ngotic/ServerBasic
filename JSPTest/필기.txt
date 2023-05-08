@@ -1,0 +1,154 @@
+Servlet
+- 자바를 사용해서 서버측에서 페이지를 만드는 기술
+
+JSP, Java Server Page
+- 자바를 사용해서 서버측에서 페이지를 만드는 기술
+- Servlet의 다음 버전 
+
+서블릿 vs JSP 
+1. 서블릿
+	a. 장점: 자바 기반. 자바 구문을 사용할 수 있다.        > 자바 클래스 사용
+	b. 단점: 자바 기반. 클라이언트 코드 작성이 불편하다.   > 문자열 취급 
+													     > 가상 주소 매핑 필요
+													   
+
+2. JSP(= 웹페이지처럼 보이는 서블릿 )
+	a. 장점 : HTML 문서 기반. 클라이언트 코드 작성이 쉽다. > 구문 인식
+	                                                     > 가상 주소 매핑 불필요 
+	                                                     
+	b. 단점 : HTML 문서 기반. 단점이다. 자바 구문 작성이 불편하다. 근데 서블릿이 더불편함 
+	
+	// jsp 파일은 사실은 자바 클래스다. 
+	 
+	<% 
+	Random rnd = new Random(); 이넘쓸라면 이넘을 자바 영역입니디 ~ 이렇게 써야 하낟.  
+	%>
+	서블릿이 쓰던 문법을 JSP에서, JSP에서 쓰던 문법을 서브릿에서 쓴다. 거의 같은 기술이다. 
+
+
+3. 서블릿 + JSP 이게 끝이다. ( 자바로 운영되는 사이트는 이렇게 되어 있다. ) > Spring으로 됨
+	// 섞어쓴다.
+	 
+	a. 서블릿: 자바 코드 담당 
+	b. JSP : 클라이언트 코드 담당  
+	
+	
+JSP 구성요소
+1. JSP 지시자, JSP Directive 
+	- page 지시자
+	- include 지시자
+	- taglib 지시자
+
+2. 스크립트 요소, Scripting Elements 
+	- 스크립틀릿 <%     %>  Scriptlet > HTML 영역에서 Java를 사용 가능한 영역 제공
+	- 익스프래션 <%= 값 %>  Expression > 해당 위치에서 값을 출력하는 용도이다. 
+	- 선언부 
+
+3. 액션 태그, Action Tags
+	- 기본 액션 태그
+	- 확장 액션 태그
+	- 사용자 정의 액션 태그 
+
+
+빈 메모장 띄우고 저 페이지를 한줄한줄 실행한다. 
+내가 할 수 있는 건 내가 하고 내가 못하는 건 남한테 넘긴다. 
+
+톰켓은 내가 할 수 있는 일하고 내가 할 수 없는거 넘긴다. 
+
+SSR(Servier side Rendering) // 이게 익숙함
+- HTML 페이지를 서버측에서 만든다. 
+- 전통적 방식
+
+CSR(Cient Side Rendering) + Rest API(Restful API)
+- HTML 페이지를 JavaScript로 만든다.
+- 필요한 데이터만 서버랑 송수신을 통해 얻는다.
+- Ajax, JavaSCript, Framework(Angular, React 등..)
+
+1. JSP 지시자, JSP Directive 
+- 톰캣에서 JSP 페이지와 관련된 여러가지 상황을 알려주는 역할 > 환경 설정
+- <%@ %>
+
+a. page 지시자 > 거의 건들 일이 없다.
+	- JSP 페이지 관련 설정
+	// <%@ page 든 <%@page든 띄든 안띄든 오케이
+	- <%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%> 
+    - language="java" : 현재 페이지를 처리하는 서버측 언어가 java입니다.
+    - contentType="text/html; charset=UTF-8" : 브라우저에게 돌려줄 임시 페이지에 관련된 설정
+    		// 니가 받아볼 문서가 text/html이야 ~ 니가 받아볼 페이지는 UTF-8로 되서 건내줄 예정이야 ~ 고칠일 없다. 
+브라우저에게 돌려줄 임시 페이지에 관련된 설정
+	- pageEncoding="UTF-8" : ★ 현재 JSP 페이지의 인코딩
+	
+	- <%@page import = "java.util.*" %> // 페이지 지시자 밑에다가 import를 관리해라 위쪽
+	
+	
+ASP기술 MS > JSP가 이걸 베이스로 만듬
+VB스크립트, 자바 스크립트
+ 
+	- errorPage="URL" : 오류가 발생하면 자동으로 URL이동, 오류 페이지
+	// 쿠팡가서 주소 엉망징창으로 고침  > 404 Not Found > 쿠팡이 준비한 안내 페이지가 뜬다. 
+	
+	
+b. include 지시자
+	- <%@ include file="URL " %>
+	- 다른 JSP/HTML 페이지를 또 다른 JSP 페이지의 일부 영역에 삽입하는 기술
+	- 조각 페이지 = 다른뷰도 include 같은 것들이 있다.
+	- webapp > "ex04_include.jsp"  : 메인 페이지
+	- webapp > "inc" > "sub.jsp"   : 조각 페이지 
+	
+	
+2. 스크립트 요소, Scripting Elements 
+a. 스크립틀릿 > 일을 한다. 
+	- <%     %>
+	- 이 영역으 자바 영역이다.
+	- 순수 자바 코드를 HTML 페ㅣ이지에서 작성할 수 있도록 선언
+	- Scriptlet = Script + Applet 
+	일반언어로 만든 걸 브라우저에서 동작하게 하는 기술 
+	C++ 이런거 > html태그만들고 브라우저에 삽입 > Active X
+	그거의 자바 버전이 applet이다.  
+	- 대부분의 비즈니스 코드 작성 담당(대부분의 업무 + 알고리즘 구현)
+	- 가장 중요한 역할 
+	
+	
+b. 익스프래션(HTML에다가 그 값을 출력할 일이 있을 때) > 일의 결과를 화면에 출력
+	- <%=  %>
+	- 자바의 값을 HTML 문서에 출력한다. > 표현한다. expression > 출력한다.
+	
+	
+c. 선언부 : 위의 2개는 잘 쓰고 이건 잘 안씀 
+	- <%! %> : 꺽쇠 퍼센트 느낌표 
+	- ex06_declaration.jsp
+	
+	
+JSP(Servlet) 내장 객체가 있다. JSP Implicit Object
+- 개발자가 직접 생성하는 객체가 아니라, JSP(톰켓)가 미리 만들어서 제공하는 객체
+- 예약어로 제공한다. 
+	
+request, response, session, pageContext,
+out, application
+config, page, exception 등.. 
+
+
+- pageContect, request, session, application 
+	: 객체 내부에 사용자(개발자) 데이터를 관리하는 저장소를 가진다. (*****)
+	-> 다른애들은 없는데 얘네들만 가진다. 컬랙션이 있다 map이다. 
+	: 내장객체 .setAttribute(key, value)
+	: 내장객체.getAttribute(key) 
+	
+1. request
+	request에서 뭔가를 할 때 클라이언트에서 서버쪽으로 뭔가를 할 때다. ( 고객이 서버로 요청 request ) 
+	                                                                 ( 응답 response )
+	a. 전송된 데이터 가져오기 
+	b. 전송된 데이터 인코딩 
+	c. 요청과 관련된 정보 가져오기 
+	
+	ex07.jsp
+	ex07ok.jsp
+	
+2. response
+	- 서버 > (행동) > 클라이언트
+	
+	
+	
+	
+	
