@@ -15,7 +15,6 @@ JSP, Java Server Page
 2. JSP(= 웹페이지처럼 보이는 서블릿 )
 	a. 장점 : HTML 문서 기반. 클라이언트 코드 작성이 쉽다. > 구문 인식
 	                                                     > 가상 주소 매핑 불필요 
-	                                                     
 	b. 단점 : HTML 문서 기반. 단점이다. 자바 구문 작성이 불편하다. 근데 서블릿이 더불편함 
 	
 	// jsp 파일은 사실은 자바 클래스다. 
@@ -55,11 +54,11 @@ JSP 구성요소
 
 톰켓은 내가 할 수 있는 일하고 내가 할 수 없는거 넘긴다. 
 
-SSR(Servier side Rendering) // 이게 익숙함
+SSR(Servier Side Rendering) // 이게 익숙함
 - HTML 페이지를 서버측에서 만든다. 
 - 전통적 방식
 
-CSR(Cient Side Rendering) + Rest API(Restful API)
+CSR(Client Side Rendering) + Rest API(Restful API)
 - HTML 페이지를 JavaScript로 만든다.
 - 필요한 데이터만 서버랑 송수신을 통해 얻는다.
 - Ajax, JavaSCript, Framework(Angular, React 등..)
@@ -76,11 +75,10 @@ a. page 지시자 > 거의 건들 일이 없다.
     - language="java" : 현재 페이지를 처리하는 서버측 언어가 java입니다.
     - contentType="text/html; charset=UTF-8" : 브라우저에게 돌려줄 임시 페이지에 관련된 설정
     		// 니가 받아볼 문서가 text/html이야 ~ 니가 받아볼 페이지는 UTF-8로 되서 건내줄 예정이야 ~ 고칠일 없다. 
+    		
 브라우저에게 돌려줄 임시 페이지에 관련된 설정
 	- pageEncoding="UTF-8" : ★ 현재 JSP 페이지의 인코딩
-	
 	- <%@page import = "java.util.*" %> // 페이지 지시자 밑에다가 import를 관리해라 위쪽
-	
 	
 ASP기술 MS > JSP가 이걸 베이스로 만듬
 VB스크립트, 자바 스크립트
@@ -88,14 +86,12 @@ VB스크립트, 자바 스크립트
 	- errorPage="URL" : 오류가 발생하면 자동으로 URL이동, 오류 페이지
 	// 쿠팡가서 주소 엉망징창으로 고침  > 404 Not Found > 쿠팡이 준비한 안내 페이지가 뜬다. 
 	
-	
 b. include 지시자
 	- <%@ include file="URL " %>
 	- 다른 JSP/HTML 페이지를 또 다른 JSP 페이지의 일부 영역에 삽입하는 기술
 	- 조각 페이지 = 다른뷰도 include 같은 것들이 있다.
 	- webapp > "ex04_include.jsp"  : 메인 페이지
 	- webapp > "inc" > "sub.jsp"   : 조각 페이지 
-	
 	
 2. 스크립트 요소, Scripting Elements 
 a. 스크립틀릿 > 일을 한다. 
@@ -108,7 +104,6 @@ a. 스크립틀릿 > 일을 한다.
 	그거의 자바 버전이 applet이다.  
 	- 대부분의 비즈니스 코드 작성 담당(대부분의 업무 + 알고리즘 구현)
 	- 가장 중요한 역할 
-	
 	
 b. 익스프래션(HTML에다가 그 값을 출력할 일이 있을 때) > 일의 결과를 화면에 출력
 	- <%=  %>
@@ -132,23 +127,79 @@ config, page, exception 등..
 - pageContect, request, session, application 
 	: 객체 내부에 사용자(개발자) 데이터를 관리하는 저장소를 가진다. (*****)
 	-> 다른애들은 없는데 얘네들만 가진다. 컬랙션이 있다 map이다. 
-	: 내장객체 .setAttribute(key, value)
+	: 내장객체.setAttribute(key, value)
 	: 내장객체.getAttribute(key) 
 	
 1. request
-	request에서 뭔가를 할 때 클라이언트에서 서버쪽으로 뭔가를 할 때다. ( 고객이 서버로 요청 request ) 
+	request에서 뭔가를 할 때 클라이언트에서 서버쪽으로 뭔가를 할 때다.  ( 고객이 서버로 요청 request ) 
 	                                                                 ( 응답 response )
 	a. 전송된 데이터 가져오기 
-	b. 전송된 데이터 인코딩 
+	b. 전송된 데이터 인코딩★ 
 	c. 요청과 관련된 정보 가져오기 
 	
 	ex07.jsp
 	ex07ok.jsp
+	ex08.jsp
+	ex08ok.jsp
+	ex09.jsp
+	ex09ok.jsp
+	ex10_request_header.jsp > 요청정보 알수 있는데~ 
 	
 2. response
 	- 서버 > (행동) > 클라이언트
+	a. 돌려줄 임시 페이지 제작 > response.getWriter() > PrintWriter()
+	// 서버쪽에서 클라이언트에게 임시페이지를 돌려준다. 
+	b. 돌려줄 페이지를 response가 만든다. 돌려줄 페이지의 인코딩 처리를 얘가 한다. 
+	돌려줄 임시 페이지 인코딩 . response.setCharacterEncoding("UTF-8");
+	c. 돌려줄 내용의 MIME 지정 > 파일 업로드 수업..
+	ex11_response_one.jsp
+	ex11_response_two.jsp
 	
+3. pageContext 
+	- 페이지 실행(요청~응답)중에 관련된 데이터를 저장하는 객체
+	a. 페이지 이동하기
+	- pageContext.forward()
+	- ex12_pageContext_one.jsp
+	- ex12_pageContext_two.jsp
 	
+4. out 
+	- 응답 페이지 출력 스트림 객체
+	- 서블릿 PrintWriter와 같은 역할
+	- ex13_out.jsp
+
+5. session 
+	- ex14_session.jsp
+	- ex14_session_2.jsp
+	- 세션에 저장한 변수 : 전역변수(페이지간에 전달과정 없이 언제든 입출력 가능하다.)
+	- 세션에 저장한 변수 : 접속 종료전까지 계속 유지가 된다.(상태 유지 도구 역할) 
+	- 한번 만들어놓으면 사이트 전체에서 사용가능하다. 그래서 아주 위험하다.  
+
+	- ex15_session.jsp
+	- ex16_session.jsp
+	- ex16_set.jsp
+	- ex16_del.jsp
+	- ex16_reset.jsp
+	- ex16_interval.jsp
 	
-	
-	
+6. application 
+	- ex17_application.jsp
+	- ex17_application_ok.jsp
+	- ex17_application_view.jsp
+
+
+pageContext, request(forward쓰면 데이터 전달가능), session, application 생명주기
+- pageConext, request, session, application(한놈이든 두놈이든 께속 와있으면 살아있다 생명주기가 길다.)
+
+- A페이지(데이터 저장) > B 페이지(데이터 접근)
+
+- ex18_one.jsp
+
+- ex18_two.jsp
+
+
+-JSP 실제 처리 프로세스
+-Cookie 라는 걸 알자
+
+
+ 
+
