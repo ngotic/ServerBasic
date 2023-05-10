@@ -22,7 +22,7 @@
 		</tr>
 		<% Enumeration<String> e= request.getHeaderNames();
 			while(e.hasMoreElements()){
-				String name = e.nextElement();
+				String name = e.nextElement(); //nextElement()로 다음거 꺼낸다.
 		%>
 		<tr>
 			<td><%= name %></td>

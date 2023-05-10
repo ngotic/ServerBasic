@@ -75,8 +75,8 @@
 			<tr>
 				<th>아이콘</th>
 				<td>
-					<input type="radio" name="icon" checked>없음
-					<input type="radio" name="icon"  value="glyphicon glyphicon-heart"><span class="glyphicon glyphicon-heart"></span>
+					<input type="radio" name="icon" value="" checked>없음
+					<input type="radio" name="icon" value="glyphicon glyphicon-heart"><span class="glyphicon glyphicon-heart"></span>
 					<input type="radio" name="icon" value="glyphicon glyphicon-headphones"> <span class="glyphicon glyphicon-headphones"></span>
 					<input type="radio" name="icon" value="glyphicon glyphicon-camera"> <span class="glyphicon glyphicon-camera"></span>
 					<input type="radio" name="icon" value="glyphicon glyphicon-facetime-video"> <span class="glyphicon glyphicon-facetime-video"></span>
@@ -87,10 +87,26 @@
 			<tr>
 				<th>테두리</th>
 				<td>
-					<select name="sel1">
+					<select name="sel1" id="sel">
 						<option value="f1">감추기</option>
 						<option value="f2">보이기</option>
 					</select>
+					<div id="borderbox" class="well">
+						<div>두께(px) : <input type="number" name="borderwidth" min="0" max="10" value="1" class="form-control sm inline right"></div>
+						<div>색상 : <input type="color" name="bordercolor" value="#000000" class="form-control sm inline"></div>
+						<div>
+							스타일 :
+							<select name="borderstyle" class="form-control sm inline">
+								<option value="solid">실선</option>
+								<option value="dashed">쇄선</option>
+								<option value="dotted">점선</option>
+							</select>	
+						</div>
+						<div>
+							모서리(px) : <input type="number" name="borderradius" min="0" max="50" value="0" class="form-control sm inline right">
+						</div>
+					</div>
+					
 				</td>
 			</tr>
 			
@@ -104,7 +120,17 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+	// alert($("#sel").val());
+	$("#borderbox").hide();
+	$("#sel").change(function(){
+		if($("#sel").val()=="f2"){
+			$("#borderbox").show();
+		} else {
+			$("#borderbox").hide();
+		}
+	})
 	
 </script>
+
 </body>
 </html>

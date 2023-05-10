@@ -17,6 +17,7 @@
 1. 서블릿 클래스 선언 
    * javax.servlet.Servlet 인터페이스를 구현(복잡)
    * javax.servlet.http.HttpServlet 클래스를 상속(이 방법이 무난하다.)
+   * > HttpServlet가 Servlet인터페이스로 구현
 
    * 작성법 > 기본적으로 service코드를 작성해야 한다. doGet, doPost
    * 매개변수 2개 
@@ -100,7 +101,8 @@ public class myServlet extends HttpServlet {
 
 ## 6. 서블릿 동작흐름 
 
-<img src="imgs/1.png">
+<img src="https://github.com/ngotic/ServerBasic/blob/main/imgs/1.PNG?raw=true">
+
 먼저 우리가 톰켓이라는 걸 실행시켜놓는다. 그 후에 Ex03.java 코드를 작성하고 web.xml파일 작성하고 컴파일해놓아서 메모리에 올려놓는다. 그 후 브라우저는 http//컨텍스트루트/ex03로 요청을 보내면 톰켓 서버는 web.xml을 뒤진다. 맞는 URL패턴에 클래스를 실행시켜주려고 하는 것이다. 그래서 맞는 것을 실행시켜주는 것이다. Ex03은 doGet()를 작성했다. 서블릿 컨테이너는 서블릿 인스턴스를 생성하고 doGet()을 호출시켜 doGet()에서 만드는 임시페이지를 서버 톰켓으로 전송한다. 톰켓은 HTTP response로 클라이언트쪽으로 전송하는데 이 페이지를 우리는 캐싱해놓고 캐싱해놓은 페이지를 브라우저는 우리에게 보여준다.
 * 또다른 특징 : java의 스레드 사용, MVC 패턴이용 등
 
@@ -108,3 +110,4 @@ public class myServlet extends HttpServlet {
 
 * 소스가 바뀌면 서블릿을 재 컴파일
 * 자바쪽 소스가 많다. > 이게 메인임 클라이언트쪽 소스 다루기가 빡쌔다...
+

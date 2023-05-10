@@ -24,9 +24,8 @@ request.setAttribute("c", 30); // 서버 메모리에 저장한다., request변�
 // 바로 서버에서 이동한다. 서버측 이동 
 
 
-response.sendRedirect("ex12_pageContext_two.jsp"); // 일반적인 이동
-
-// pageContext.forward("ex12_pageContext_two.jsp"); // 데이터를 넘기면서 이동할 때는 forward쓴다. 
+//response.sendRedirect("ex12_pageContext_two.jsp"); // 일반적인 이동
+pageContext.forward("ex12_pageContext_two.jsp"); // 데이터를 넘기면서 이동할 때는 forward쓴다. 
 
 
 %>

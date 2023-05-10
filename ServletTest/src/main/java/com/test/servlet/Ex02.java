@@ -28,7 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Ex02 extends HttpServlet {
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+	public void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException{
 			
 			// BufferedWriter > 생성된 파일 > HDD에 저장 
 			// PrintWriter > 생성된 파일 > 톰켓을 통해서 브라우저에게 반환

@@ -19,7 +19,9 @@
 	
 	<h2>out 사용 안함 </h2>
 	<% for ( int i=1 ; i<=9 ; i++) { %>
+	
 	<div><%= dan %>  x <%= i %> = <%= dan * i %></div>
+	
 	<% } %>
 	
 	<h2>out 사용함 > 우리에게 선택권을 주는 것이다. </h2>
@@ -27,7 +29,7 @@
 		out.println(String.format("<div> %d x %d = %d </div>",
 				dan,
 				i,
-				dan*i)); // 서블릿이 하던 방식이다.
+				dan*i)); // 서블릿이 하던 방식이다. 출력용도인데 import 필요 없네 
 	}
 	%>
 		
