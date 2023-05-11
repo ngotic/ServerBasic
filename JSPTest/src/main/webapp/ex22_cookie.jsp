@@ -2,12 +2,11 @@
     pageEncoding="UTF-8"%>
  
 <%
-// 쿠키는 브라우저에 저장한다. 이 객체를 클라이언트쪾으로 보냉
+     // 쿠키는 브라우저에 저장한다. 이 객체를 클라이언트쪾으로 보냉
 	//Cookie cookie = new Cookie("color", "blue");
 
 	// 브라우저저장하는법
 	//response.addCookie(cookie);
-	
 	
 	
 	Cookie[] list = request.getCookies(); // 쿠키를 들고온다. 

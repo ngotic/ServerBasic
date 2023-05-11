@@ -45,6 +45,16 @@
 		<a href="#!" onclick="alert('회원 전용 페이지입니다.\n로그인 하세요.'); location.href='login.jsp';">회원 전용 페이지</a>
 		<% }  %>
 		
+		
+		<hr>
+		
+		<% if (session.getAttribute("id") != null && session.getAttribute("lv").toString().equals("2")){ %>
+		<a href="admin.jsp">관리자 전용 페이지</a>
+		<% }  %>
+		
+		
+		
+		
 	</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>

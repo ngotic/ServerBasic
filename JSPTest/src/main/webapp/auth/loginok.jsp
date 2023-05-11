@@ -42,8 +42,10 @@
 		session.setAttribute("id", id); // 인증 티켓 > 식별자 저장
 		
 		// 로그인 회원의 부가 정보 
-		session.setAttribute("name", rs.getString("name")); // 들고다니면서 확인하게... 
-		session.setAttribute("lv", rs.getString("lv"));// 이게 세션의 장점이다.
+		session.setAttribute("name",
+				rs.getString("name")); // 들고다니면서 확인하게... 
+		session.setAttribute("lv", 
+				rs.getString("lv"));// 이게 세션의 장점이다.
 		
 		// 접속하는 모든사람들이 쓰는 공간이라 세션은 신중해야함
 		// 메모리 때문에 컴터 뻗어버림

@@ -11,7 +11,6 @@ JSP, Java Server Page
 	b. 단점: 자바 기반. 클라이언트 코드 작성이 불편하다.   > 문자열 취급 
 													     > 가상 주소 매핑 필요
 													   
-
 2. JSP(= 웹페이지처럼 보이는 서블릿 )
 	a. 장점 : HTML 문서 기반. 클라이언트 코드 작성이 쉽다. > 구문 인식
 	                                                     > 가상 주소 매핑 불필요 
@@ -20,7 +19,7 @@ JSP, Java Server Page
 	// jsp 파일은 사실은 자바 클래스다. 
 	 
 	<% 
-	Random rnd = new Random(); 이넘쓸라면 이넘을 자바 영역입니디 ~ 이렇게 써야 하낟.  
+		Random rnd = new Random(); 이넘쓸라면 이넘을 자바 영역입니디 ~ 이렇게 써야 하낟.  
 	%>
 	서블릿이 쓰던 문법을 JSP에서, JSP에서 쓰던 문법을 서브릿에서 쓴다. 거의 같은 기술이다. 
 
@@ -45,8 +44,8 @@ JSP 구성요소
 
 3. 액션 태그, Action Tags
 	- 기본 액션 태그
-	- 확장 액션 태그
-	- 사용자 정의 액션 태그 
+	- 확장 액션 태그 : JSTL > 바로 못쓰고 설치해야함
+	- 사용자 정의 액션 태그 : 어렵다.... 
 
 
 빈 메모장 띄우고 저 페이지를 한줄한줄 실행한다. 
@@ -189,11 +188,8 @@ config, page, exception 등..
 
 pageContext, request(forward쓰면 데이터 전달가능), session, application 생명주기
 - pageConext, request, session, application(한놈이든 두놈이든 께속 와있으면 살아있다 생명주기가 길다.)
-
 - A페이지(데이터 저장) > B 페이지(데이터 접근)
-
 - ex18_one.jsp
-
 - ex18_two.jsp
 
 
@@ -254,3 +250,80 @@ pageContext, request(forward쓰면 데이터 전달가능), session, application
               > "member.jsp"    : 회원 전용 페이지 > 허가 작업 
               > "admin.jsp"     : 관리자 전용 페이지 > 허가 작업
  
+JSP 수업 끝
+
+1. Servlet
+2. JSP           > JSP Model1
+3. Servlet + JSP > JSP Model2   
+
+JSP Model2가 제대로 만든 것이다. 
+
+
+JSP Model
+1. JSP Model1
+	- HTML + CSS + Javascript + JAVA + Servlet + JSP = *.jsp
+	-> 다 한 페이지에 한방에 떄려넣는데 Model 1이다. 
+	- 코드가 뒤엉켜서 > 불편
+	
+2. JSP Model2
+	- Servlet : 자바 코드 작성	
+	- JSP : 클라이언트 코드 작성
+	- 디자인 패턴 : MVC 패턴 기반 구현
+
+MVC 디자인 패턴 
+> : 업무를 분리해서 담당자를 나누자
+
+- Model      > 데이터 (관련 업무) 담당 > 일반 자바 클래스
+- View       > 출력 업무 담당 > JSP
+- Controller > 전체 업무 통제 역할 > 서블릿
+
+
+Servlet 
+- 자바 기반 + 웹 추가
+- 자바 작성 용이, 웹 작성 불편 
+
+JSP
+- 웹 기반 + 자바 추가
+- 웹 작성 용이, 자바 작성 불편
+
+Servlet + JSP 
+- 자바작성(Servlet) 
+- 웹 작성(JSP) 
+
+
+Hello
+- "com.test.mvc" > Hello.java
+
+webapp > "mvc" > "hello.jsp"
+
+
+JSP Model 2 + EL +JSTL 
+- com.test.mvc > "Address.java"    : Controller
+			   > "AddressDAO.java" : Model(?)
+			   > "AddressVO.java"  : Model
+			   
+- webapp > mvc > "address.jsp" : View
+
+
+파일 업로드/다운로드
+- 클라이언트 > (복사) > 서버 : 업로드
+- 서버 > (복사) > 클라이언트 : 다운로드
+- 파일 업로드 라이브러리: cos.jar > maven repo에서 다운
+- 파일 업로드 라이브러리 : cos.jar
+
+"com.test.file" > "FileTest.java" // 서블릿
+				> "FileTestOk.java"
+ 
+webapp > WEB-INF > "file" > "filetest.jsp"    // jsp 뷰
+                          > "filetestok.jsp"  
+                          
+webapp > "uploads" 폴더(업로드 파일)
+
+//C:\class\code\server\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\JSPTest\uploads
+
+
+
+
+
+
+

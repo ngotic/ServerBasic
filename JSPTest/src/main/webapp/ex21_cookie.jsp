@@ -46,7 +46,7 @@
 			if($('#txtid').val() == 'hong' && $('#txtpw').val()=='1234'){
 				//로그인성공
 				location.href='ex20_cookie_one.jsp';
-				// attr로 접근안되는건 prop으로 접근
+				// ★ attr로 접근안되는건 prop으로 접근
 				if($('#cb').prop('checked')) {
 					//alert('O');
 					setCookie('id', $('#txtid').val(), 365); // 이미 cookie.js에 Date가 있음

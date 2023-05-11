@@ -29,3 +29,5 @@ create table tblUser(
 insert into tblUser values ('hong', '1111', '홍길동', 1);
 insert into tblUser values ('test', '1111', '테스트', 1);
 insert into tblUser values ('admin', '1111', '관리자', 2);
+
+commit;

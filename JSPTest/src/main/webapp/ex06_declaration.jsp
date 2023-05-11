@@ -29,7 +29,7 @@
 		int a = 10;
 		System.out.println(this.a);
 		/* public void test(){
-		} */
+		}  */
 		// 느낌표 안붙이면 지역 
 	%>
 	

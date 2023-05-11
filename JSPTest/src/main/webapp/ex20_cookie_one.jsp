@@ -25,15 +25,19 @@
 	
 	- JSP(Servlet), Javascript 등 쿠키에 접근해서 조작 가능
 	
-	쿠키의 종류
+	쿠키의 종류(session cookie)
 	1. 메모리쿠키
+		- 메모리에는 저장되고, 디스크에는 저장 안된다.
 		- 브라우저가 실행중에만 저장
-		- 부러우저가 종료되면 쿠키도 삭제
+		- 브러우저가 종료되면 쿠키도 삭제
+		- 은행은 계정보안 철저히 해야해서 아이디를 기억하면 안된다.
+		- 그래서 이거 쓸때도 있음
+		- Expires/ Max-Age부분이 Session이면 Session쿠키
 		
-	2. 하드쿠키
+	2. 하드쿠키(persistent cookie)
 		- 브라우저가 종료되도 유지
-		- 하드 디스크 
-		- 
+		- 하드 디스크, 유효기간을 셋팅, 만료되야 파기된다.
+		- Expires/ Max-Age부분이 특정한 기간이 기록
 	 -->
 
 	<h2>배경 화면 선택(테마)</h2>
@@ -67,16 +71,15 @@
 	*/
 	//key = value&key=value.. 
 	setCookie('name','홍길동');
-	console.log(getCookie('name'));
+	/* console.log(getCookie('name')); */
+	console.log('***'+getCookie('background' == ''));
 	
-	
-	if(getCookie('background' == '')) {
-		
+	if(getCookie('background') == '') {
 		// 첫 방문
 		const date  =new Date();
 		date.setFullYear(date.getFullYear()+1);
 		// 이 때, 선택한 테마를 쿠키에 저장도 한다.
-		setCookie('background', 'rect_icon01.png', date);
+		setCookie('background', 'rect_icon01.png', 365);
 	}
 	else {
 		// 재방문 
@@ -86,7 +89,7 @@
 		// 제이쿼리 each(index, item)
 		
 		$('input[name=background]').each((index, item)=>{
-			if($(item).val() == getCookie('background')){
+			if( $(item).val() == getCookie('background') ){
 				$(item).attr('checked', true);	
 			} else {
 				$(item).attr('checked', false);
@@ -95,19 +98,13 @@
 		});
 	}
 	
-	
-	
-	
 	/* $('body').css('background-image', `url(images/\${$(this).val()})`); */
-	
 	
 	$('input[name=background]').change(function(){
 		//alert($(this).val()); > ★ 템플릿 스트링 쓸 때 역슬래시 써라 !! jsp에선 그렇다. 
 		$('body').css('background-image', `url(images/\${$(this).val()})`);
-		
 		/* 	const date  =new Date();
 		date.setFullYear(date.getFullYear()+1); */ // 이미 정의되어 있음
-		
 		// 이 때, 선택한 테마를 쿠키에 저장도 한다.
 		setCookie('background', $(this).val(), 365);
 	});
