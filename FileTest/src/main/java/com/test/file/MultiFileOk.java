@@ -54,26 +54,24 @@ public class MultiFileOk extends HttpServlet {
 			Enumeration e = multi.getFileNames(); //
 			
 			while(e.hasMoreElements()){
-				//System.out.println("*"+e.nextElement());
-				//File file = multi.getFile(e.nextElement().toString());
-				String file = e.nextElement().toString();
-				
-				String orgfilename = multi.getOriginalFileName(file);
-				String filename = multi.getFilesystemName(file);
+
+				String name= e.nextElement().toString();				
+				String orgfilename = multi.getOriginalFileName(name);
+				String filename = multi.getFilesystemName(name);
 				
 				System.out.println(">"+orgfilename);
 				System.out.println(">"+filename);
 				olist.add(orgfilename);
-				flist.add(filename);
-				
+				flist.add(filename);	
 			}
+			req.setAttribute("olist", olist);
+			req.setAttribute("flist", flist);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		req.setAttribute("olist", olist);
-		req.setAttribute("flist", flist);
+		
 		
 		RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/multifileok.jsp");
 		dispatcher.forward(req, resp);

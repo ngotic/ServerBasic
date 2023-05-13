@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +30,9 @@
 	<hr>
 	<div>
 		다운로드 > 하드디스크에 있는 파일명, 원래 파일명 그대로
-		<a href ="/jsp/file/download.do?filename=${filename}&orgfilename=${orgfilename}">${orgfilename}</a>	
+		<a href ="/jsp/file/download.do?filename=${filename}&orgfilename=${orgfilename}">${orgfilename}</a>
+		<a href ="/file/download.do?filename=${filename}&orgfilename=${orgfilename}">${orgfilename}</a>		
+		<a href ="<c:url value='/file/download.do?filename=${filename}&orgfilename=${orgfilename}'/>">이렇게</a> 
 	</div>
 	
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>

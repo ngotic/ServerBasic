@@ -686,6 +686,7 @@ ${n1}  // 사용시 이렇게 사용
 ```
 
 ## 14. 파일 업로드 / 다운로드
+
 - 클라이언트 > (복사) > 서버  : 업로드
 - 서버 > (복사) > 클라이언트 : 다운로드
 - 파일 업로드 라이브러리로 cos.jar라는 라이브러리가 있는데 굉장히 오래됬지만 아직도 쓴다고 함
@@ -694,6 +695,8 @@ ${n1}  // 사용시 이렇게 사용
 - 우리가 기본적으로 입력을 하고 form태그로 데이터를 전송할 때는 enctype이 "application/x-www-form-urlencoded" 기본타입이다. > 요거 때문에 쿼리스트링 형태로 전달이 가능, 모든 문자를 서버로 보내기 전에 인코딩  
 - enctype="multipart/form-data" 일때 모든 문자를 인코딩하지 않음, 파일이나 이미지를 서버로 전송시 사용한다. request.getParameter() 값이 null이 나온다.\<input type="file">이 포함된 form에서 쓴다. 
 - request.getParameter() 값이 null이 나오는 해결책으로 cos라이브러리를 쓰고 MultipartRequest라는 객체를 사용해서 전송된 내용을 꺼낸다.
+- \<form method="POST" action="서블릿" enctype="multipart/form-data"> 이런식으로 form태그를 구성
+- multipart/form-data 사용시 다중 업로드도 가능하다. 
 ``` java
 // 객체 초기화
 MultipartRequest multi = new MultipartRequest(
@@ -737,11 +740,9 @@ MultipartRequest multi = new MultipartRequest(
     - flush로 버퍼내용 비워주고 스트림 close() 
     - 그리고 중간 중간에는 header 세팅, 그리고 항상 인코딩 신경써야 한다. 
       - ContentType 설정도 해주긴 해야함
-      - 
-        
-  
+      - Content-Disposition 이부분도 설정해주는데 없으면 에러가 날까? 
 ```java
-//1. 저장될 위치 지정
+//1. 저장될 위치 지정 (webapp폴더에 uploads라는 폴더를 미리 만들고 시작)
 String savePath = "uploads";
 ServletContext context = getServletContext(); // 톰켓 context를 가지고와서 
 String sDownloadPath = context.getRealPath(savePath); //진짜로 서버의 getRealPath인데
@@ -781,6 +782,108 @@ in.close();
 * 혹은 view단에서 const uri = 'https://mozilla.org/?x=шеллы';
 const encoded = encodeURI(uri); 이렇게 URI인코딩을 해야함
 
+
+## DownloadPath 처리
+- 기본적으로 링크를 상대경로로 표시하면 contextRoot에 상대경로가 붙는다.
+- 하지만 다운로드시에는 contextRoot를 인지하지 못하고 컨텍스트루트/file/download.do를 해야 다운로드 서블릿이 동작이 되는 문제가 있었음.
+- 그래서 그냥 c:url 처리를 했다. 이러면 알아서 상대경로를 붙여주니 해당 문제가 일어나지 않는다. \<a href="<c:url value='상대경로'/>" >
+<img src="./imgs/downloadLink.PNG">
+
+
+### 다중파일 업로드 
+- 
+``` js
+// jsp단.
+<input type="file" name="attach1">
+<input type="file" name="attach2">
+<input type="file" name="attach3">
+<input type="file" name="attach4">
+// ↑ 여기서 name값을 중복시키지 않도록 조심하자! 
+
+// servlet단 > 처리 
+Enumeration e = multi.getFileNames(); 
+List<String> olist = new ArrayList<String>();
+List<String> flist = new ArrayList<String>();
+while(e.hasMoreElements()){
+  String name = e.nextElement().toString();	// attach1, attach2, attach3, attach4					
+  String orgfilename = multi.getOriginalFileName(name);
+  String filename = multi.getFilesystemName(name);
+  // System.out.println(">"+orgfilename);
+  // System.out.println(">"+filename);
+  olist.add(orgfilename);
+  flist.add(filename);	
+}
+req.setAttribute("olist", olist);
+req.setAttribute("flist", flist);
+```
+- getFileNames를 쓰면 input type=file된 것의 name 속성의 여러값을 저장한다. multipart/form-data가 다중 업로드를 지원하니 파일이름, 원본파일이름만 리스트로 관리면 된다. 
+
+
+
+
+## 15. 이미지 뷰어(갤러리) > 파일업로드 + DB 연동
+- CRUD에서 C, U는 input에 정보를 담아서 form POST로 submit을 한다. 
+- POST 서블릿을 작성한다.
+- 그런데 R, D는 해당 정보를 구별할 수 있는 id나 seq만 필요하다보니 link?seq=10 이런식올 링크전송으로도 문제를 해결한다. redirect나 링크전송 자체는 GET방식
+- 서블릿(Controller)역할, DB작업 DAO에게 위임, 마지막줄에는 view를 호출하는 코드
+- com.test.file 
+  - "List.java" // 시작 페이지
+	- "Add.java"
+	- "AddOk.java"
+	- "View.java"
+	- "FileDAO.java"
+	- "FileDTO.java"
+	- "Edit.java"
+	- "EditOk.java"
+	- "DelOk.java"
+
+- 서블릿단> 처리> 결과를 dto 형태로 request에 넣고 view단으로 전송 
+- view단에서는 EL로 ${dto.name} 이렇게 값을 꺼내서 쓴다. 
+- 리스트뷰 > 뷰 > 수정페이지뷰 > 수정이라는 동작을 하기위해선 seq가 필요하다. seq 자체를 뷰페이지에선 보여주진 않음 그래서 input type="hidden" value="${dto.seq}"로 가지고만 있는다. 수정 form 제출시 수정 서블릿에서는 seq를 가지고 수정작업에서 수정될 게시물을 처리한다.
+
+- views >
+  - "list.jsp"
+  - "add.jsp"
+  - "addok.jsp"
+  - "view.jsp"
+  - "edit.jsp"
+  - "editok.jsp"
+  - "delok.jsp"
+
+### VO vs DTO 
+* 둘다 데이터를 저장하는 객체이지만 의미를 구분해서 사용하는 경우가 많음 
+- VO : Value Object > 특정 값 자체를 표현한다.  > Read Only > 불변성
+  - DB에서 가져온 데이터를 보관
+  - 읽기 전용 > 리터럴(상수)
+  - 고치면 안됨 수정하는 순간 VO가 아니다. > setter를 정의하지 않음 
+  - 값자체의 불변성을 위해서 생성자를 쓴다. 한번 정의하고 안고치겠다는 말 
+  - 서로 다른 이름을 갖는 VO인스턴스라도 모든 속성 값이 같다면 두 인스턴스는 같은 객체라고 할수 있음
+  - compare 기능에서 사용하는 경우엔 equal, hashcode정도는 정의해도되고 ToString도 정의해도 좋음
+- DTO : Data Transfer Object > 수정가능 
+  - setter, getter 외의 다른 노직이 필요 없음 데이터 전달용도 
+  - 두 객체의 필드 값이 같더라도 두 객체는 다른 객체다. 
+  - 계층간에 데이터를 전송할 때 사용되는 도구(택배상자)
+  - 컨트롤러라는 계층이 뷰에게 보낼 때 택배상자(택배 상자)
+  - 하나의 계층에서 또다른 계층에서 전송할 떄만든 클래스인데 한 눈에 알아보기 쉽게 이름을 붙임  
+
+- DTO가 조금더 사용하기엔 제네럴하긴하다.
+
+### 동적으로 요소추가 
+- 댓글 방식도 이방식으로 구현이 되는데 버튼에 click이벤트를 걸고 jquery의 append()를 사용하고 요소 추가
+<img src="./imgs/동적추가.PNG">
+
+### 성공 or 실패시 처리
+- 이전 서블릿 단에서  result와 다시 돌아갈 곳의 힌트가 되는 정보를 넘겨준다. 
+- 아예 DAO를 jsp단에서 import하여 성공실패 처리도 가능하다.
+  
+<img src="./imgs/성공실패.PNG" width=300px;><img src="./imgs/loginPro.PNG" width=200px;>
+
+### jstl > 테이블에 요소배치
+- 만약에 테이블의 한 row에 5개씩 배치하려고 한다. 
+  - 그럼 5개가 되는 순간에 tr을 닫고 다시 열어야 한다. 
+- 근데 공간이 남는다. 이것을 처리해야하려면 5 - list.size()%5 로 남는 공간 처리
+<img src="./imgs/TableElement.PNG">
+
 ## 잡다한 팁
 
 * 스크립틀릿 주석은 살짝 다르다. <%-- <%=  %> --%>
@@ -814,5 +917,8 @@ const encoded = encodeURI(uri); 이렇게 URI인코딩을 해야함
   * URL이 전송될 때 쿼리 스트링은 아스키 코드로만 전송되기로 규정되어서 한글 같은 것은 퍼센트 인코딩을 해야한다. 한글일 경우 변환규칙에 따라 UTF-8, 그리고 한글자당 3바이트라 피->%ED%94%BC 이렇게 인코딩 된다. 
   * URL에서는 공백문자가 허용되지 않아서 공백문자는 %20 혹은 +로 인코딩이 된다. 
   * https://meyerweb.com/eric/tools/dencoder/ url 인디코딩 온라인툴
-
-
+  * input태그에 accept속성을 붙여서 필터를 걸 수 있다. \<input type="file" name="attach" required 
+				accept="image/gif, image/png, image/jpg, image/jpeg"/>
+  * input type="button"에 onclick 이벤트 등록해서 뒤로가기로 history.back(); 이라는 javascript를 사용한다.
+  * a태그나 button태그, input태그 등의 태그요소에 onclick이벤트 걸 수 있고 form태그에는 onsubmit 이벤트를 걸 수 있다. 
+  * html 태그 속성의 값으로 들어갈 땐 value=" " 이런식으로 " "로 쓰자, 혹은 ` ` template String, EL을 넣을 때는 "${dto.seq}"

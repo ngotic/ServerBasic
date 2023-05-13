@@ -21,9 +21,6 @@ public class AddOk extends HttpServlet {
 		
 		//1. 파일 업로드 처리
 		//2. DB처리
-		
-		
-		
 		// 1. 
 		String name = "";
 		String filename = "";
