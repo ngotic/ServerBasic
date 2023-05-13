@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%-- <%@ page session="false" %> --%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,8 +26,7 @@
 	
 	%> --%>
 	
-	<!-- 
-	
+<!-- 
 		JSP 페이지에서 자바 구문을 사용하지 말자!!
 		- 지저분함;;
 		
@@ -50,28 +49,28 @@
 	 <hr>
 	 
 	 <!-- 리터럴 표현 -->
-	 <div>${100}</div>
-	 <div>${3.14}</div>
-	 <div>${"홍길동"}</div>
-	 <div>${'홍길동'}</div>
-	 <div>${true} : </div>
+	 <div>${100}      : 100</div>
+	 <div>${3.14}     : 3.14</div>
+	 <div>${"홍길동"} : 홍길동 </div>
+	 <div>${'홍길동'} : 홍길동 </div>
+	 <div>${true} : true </div>
 	 <div>${null} :  null은 공백</div>
 	 <hr>
 	 
 	 <!-- 배열 -->
-	 <div>${nums}</div>
+	 <div>${nums} : 객체값</div>
 	 <div>${nums[0]}</div>
 	 
 	 <hr>
 	 
 	 <!--List  -->
-	 <div>${nums2}</div>
+	 <div>${nums2} : toString형태로 출력 > [1, 2, 3,]</div>
 	 <div>${nums2.get(0)}</div>
 	 <div>${nums2[0]}</div>
 	 
 	 <hr>
 	 <!-- Map index 지원한다. -->
-	 <div>${nums3}</div>
+	 <div>${nums3} : { } 형태로 출력 </div>
 	 <div>${nums3.get("kor")}</div>
 	 <div>${nums3["kor"]}</div>
 	 <div>${nums3.kor}</div>
@@ -79,10 +78,12 @@
 	 <hr>
 	 
 	 <!-- Object -->
-	 <div>${vo}</div>
-	 <div>${vo.getName()}</div>
-	 <div>${vo["name"]}</div>
-	 <div>${vo.name}</div>
+	 <div>${vo} : com.test.mvc.AddressVO@aa2cf9a </div>
+	 
+	 <!-- get변수 > 변수 앞 대문자가 소문자로 바뀌어서 key로 됨 -->
+	 <div>${vo.getName()} : get변수 > 변수 앞 대문자가 소문자로 바뀌어서 key로 됨</div>
+	 <div>${vo["name"]} : vo[key] 이런식으로도 접근이 가능하다. </div>
+	 <div>${vo.name} </div>
 	 
 	 
 	 <!-- 연산자 -->
@@ -91,8 +92,8 @@
 	 									<!-- 너무 길다 귀찮다. -->
 	 <div> a + b: <%= (int)request.getAttribute("a")+(int)request.getAttribute("b") %></div>
 	 
-	 <div>a + b = ${a} + ${b}</div>
-	 
+	 <div>a + b = ${a} + ${b} : \${ }를 띄어서 쓰면 문자열로 취급되어 붙음 </div>
+	 <div> 그래서 \${ } 안에서 연산을 해야 한다. </div>
 	 <div>a + b = ${a + b}</div>
 	 <div>a + b = ${a - b}</div>
 	 <div>a + b = ${a * b}</div>
@@ -101,16 +102,22 @@
 	 <div>a + b = ${a % b}</div>
 	 <div>a + b = ${a mod b}</div>
 	 
+	 <hr> ★★ 앞에것 기준이다.! 
 	 <div>${a > b}</div>
 	 <div>${a gt b}</div>
+	 <hr>
 	 <div>${a >= b}</div>
 	 <div>${a ge b}</div>
+	 <hr>
 	 <div>${a < b}</div>
 	 <div>${a lt b}</div>
+	 <hr>
 	 <div>${a <= b}</div>
 	 <div>${a le b}</div>
+	 <hr>
 	 <div>${a == b}</div>
 	 <div>${a eq b}</div>
+	 <hr>
 	 <div>${a != b}</div>
 	 <div>${a ne b}</div>
 	 
@@ -127,10 +134,10 @@
 	 
 	 <div>${ a > 0 ? "양수":"음수"}</div>
 	 <hr>
-	 
+	  
 	 <%
-	 // 생명주기가 작은애부터 찾는다. 그래서 
-	 // pageContext > request > session > application
+		// 생명주기가 작은애부터 찾는다. 그래서 
+		// pageContext > request > session > application
 	 	pageContext.setAttribute("age", 21);
 	 	request.setAttribute("age", 32);
 	 	session.setAttribute("age", 33);
@@ -142,6 +149,8 @@
 	 <div>나이: <%= request.getAttribute("age") %></div> --%>
 	 
 	 <div>나이: ${age}</div>
+	 
+	 <div>체크>이렇게도 세션꺼낼 수 있다. : ${pageContext.request.getSession(true).getAttribute("age")}</div>
 	 
 	 <div>나이: ${pageScope.age}</div>
 	 <div>나이: ${requestScope.age}</div>
@@ -271,9 +280,9 @@
 	base64로 내부적으로 인코딩한거다. 실제로 들어가있을 떈 인코딩한거다. 
 	이게 서버로 보내지면 자동으로 디코딩해서 글자를 복구한다. -->
 	<c:url var="link" value="http://localhost:8090/view.do">
-		<c:param name="name" value="hong">Hello</c:param>
-		<c:param name="age"  value="20">Hello</c:param>
-		<c:param name="address" value="서울시강남구">Hello</c:param> 
+		<c:param name="name" value="hong"/>
+		<c:param name="age"  value="20"/>
+		<c:param name="address" value="서울시강남구"/> 
 	</c:url>
 	
 	<!-- 위에 쿼리스트링으로 만들어진 링크를 아래로 붙일 수 있다. -->
@@ -282,7 +291,7 @@
 	
 	<hr>
 	<!-- response.SendRedirect(URL)로 변환 -->
-	<%-- <c:redirect url="https://naver.com"></c:redirect> --%>
+	<%-- <c:redirect url="https://naver.com"></c:redirect>  --%>
 	
 	<div>내 생일 <fmt:formatDate value="${birthday}" pattern="yyyy-MM-dd E a HH:mm:ss"/></div>
 	

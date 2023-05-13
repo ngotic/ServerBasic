@@ -26,7 +26,7 @@ public class FileTestOk extends HttpServlet {
 		// null 이 나왔는데 이게 동작이 안된거다. 
 		
 		
-		// cor.js
+		// cos.js
 		// -Request > (교체) > MultipartRequest(클래스인데)
 		
 		req.setCharacterEncoding("UTF-8");

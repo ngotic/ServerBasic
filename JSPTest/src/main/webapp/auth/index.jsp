@@ -20,9 +20,9 @@
 		<% } else { %>
 		<a href="logout.jsp">로그아웃</a>
 		<div class="pannel">
-			<div> 아이디: <%=session.getAttribute("id") %></div>
-			<div> 이름 : <%= session.getAttribute("name") %></div>
-			<div> 등급 : <%= session.getAttribute("lv").toString().equals("1")? "일반회원" : "관리자" %></div> 
+			<div> 아이디: <%= session.getAttribute("id") %></div>
+			<div> 이름 :  <%= session.getAttribute("name") %></div>
+			<div> 등급 :  <%= session.getAttribute("lv").toString().equals("1")? "일반회원" : "관리자" %></div> 
 		</div>
 		
 		<% } %>

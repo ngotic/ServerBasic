@@ -11,6 +11,13 @@ public class AddressVO {
 	private String tel;
 	private String address;
 	
+	
+	
+	@Override
+	public String toString() {
+		return "AddressVO [seq=" + seq + ", name=" + name + ", age=" + age + ", tel=" + tel + ", address=" + address
+				+ "]";
+	}
 	public String getSeq() {
 		return seq;
 	}

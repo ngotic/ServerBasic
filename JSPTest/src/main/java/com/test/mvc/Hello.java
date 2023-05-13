@@ -36,7 +36,7 @@ public class Hello extends HttpServlet{
 		int count = 10; //DB 작업 결과물
 		
 		// 모델 : 하나의 계층에서 또 다른 계층으로 데이터를 전달하는 역할 
-		//req.setAttribute("count", count); // 이렇게 넣어두면 된다. 
+		// req.setAttribute("count", count); // 이렇게 넣어두면 된다. 
 		// session 에 담아서 주기도 하는데 > 너무 오바다 데이터가 살아있으니까 그니까 굳이 넣지 않아도 될거는 않넣는다. 오버스펙임 
 		// application 얘는 더 오바다.    // pageContext는 forward로 이동하면 죽는다. 
 		

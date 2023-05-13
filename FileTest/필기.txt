@@ -1,0 +1,60 @@
+파일 업로드
+
+1. 업로드 폴더 생성
+	- webapp > files
+	
+	
+2. 패키지
+	- com.test.file
+	
+3. 뷰 폴더
+	- webapp > WEB-INF > "views"
+	- views라는 폴더를 만든다.
+	
+4. 라이브러리
+	- webapp > WEB-INF > lib
+						- ojdbc6.jar
+						- mylibrary.jar
+						- jstl-1.2.jar
+						- cos.jar
+
+다중 파일 업로드(크게 3가지 패턴이 있긴한데 2가지정도는 보자)
+- com.test.file > "MultiFile.java"
+				> "MultiFileOk.java"
+				> Download.java
+				
+- views > multifile.jsp
+		> multifileok.jsp 
+							
+							
+이미지 뷰어(갤러리) > 파일업로드 + DB 연동
+
+- CR > 쓰고 보는거 까지만 하자 
+- 유저
+- 사진(이미지) + 이름 + 날짜 + 설명 등..
+-com.test.file > "List.java" // 시작 페이지
+			   > "Add.java"
+			   > "AddOk.java"
+			   > "View.java"
+			   > "FileDAO.java"
+			   > "FileDTO.java"
+			   
+			   > "Edit.java"
+			   > "EditOk.java"
+			   > "DelOk.java"
+				
+				
+- views > "list.jsp"
+	    > "add.jsp"
+	    > "addok.jsp"
+	    > "view.jsp"
+	    > "edit.jsp"
+	    > "editok.jsp"
+	    > "delok.jsp"
+	    
+	    
+	    
+- views > "inc" > "header.jsp"
+
+
+			   

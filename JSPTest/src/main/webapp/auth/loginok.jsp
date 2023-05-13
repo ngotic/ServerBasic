@@ -58,6 +58,7 @@
 	rs.close();
 	stat.close();
 	conn.close();
+	// 이부분은 서버단 처리다. 브라우저로 볼려고 해도 못본다.
 %>
 <!DOCTYPE html>
 <html>

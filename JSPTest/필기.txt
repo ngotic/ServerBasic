@@ -277,7 +277,6 @@ MVC 디자인 패턴
 - View       > 출력 업무 담당 > JSP
 - Controller > 전체 업무 통제 역할 > 서블릿
 
-
 Servlet 
 - 자바 기반 + 웹 추가
 - 자바 작성 용이, 웹 작성 불편 
@@ -308,7 +307,7 @@ JSP Model 2 + EL +JSTL
 파일 업로드/다운로드
 - 클라이언트 > (복사) > 서버 : 업로드
 - 서버 > (복사) > 클라이언트 : 다운로드
-- 파일 업로드 라이브러리: cos.jar > maven repo에서 다운
+- 파일 업로드 라이브러리 : cos.jar > maven repo에서 다운
 - 파일 업로드 라이브러리 : cos.jar
 
 "com.test.file" > "FileTest.java" // 서블릿
@@ -317,7 +316,7 @@ JSP Model 2 + EL +JSTL
 webapp > WEB-INF > "file" > "filetest.jsp"    // jsp 뷰
                           > "filetestok.jsp"  
                           
-webapp > "uploads" 폴더(업로드 파일)
+webapp > "uploads" 폴더(업로드 파일) ★★★★ 만들었었구나... 톰켓이 컴파일시에 자동으로 이걸 만들어줌
 
 //C:\class\code\server\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\JSPTest\uploads
 

@@ -1,0 +1,14 @@
+name: "AjaxTest"
+context: "ajax"
+
+Ajax, Asynchronouse JavaScript and XML 
+- 비동기 자바 스크립트 & XML 
+- 비동기 자바 스크립트 통신
+
+- 브라우저 <- (통신) -> 웹서버(통신)
+
+- 자바스크립트 <- (통신) -> 웹서버(톰켓)  
+
+- 순수 자바스크립트 버전
+- Jquery 버전 > 코드가 짧아서 쉽다. 
+- ES6 자바스크립트 버전
