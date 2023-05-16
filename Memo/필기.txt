@@ -3,7 +3,6 @@
 파일 생성
 -Memo > "script.sql"
 
-
 "com.test.memo"
 
 - "List.java" // 목록 

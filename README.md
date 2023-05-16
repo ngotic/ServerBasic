@@ -289,16 +289,21 @@ https://m.blog.naver.com/pjok1122/221726178384 : 여기 사이트 좋은 정보 
 
 > DB 작업 시
 > * DB를 사용하려면 ojdbc6.jar 파일을 참조할 수 있도록 원래는 build path를 지정해야 한다. 근데 따로 지정할 필요 없이 WEB-INF/lib/ 밑에다가 .jar파일을 저장하면 된다. 
-> * 1번 방식
->   * PreparedStatement stat = null;
->   * ? 넣어서 sql 작성 , conn.prepareStatement(sql);
+> * 1번 방식 > 미리 sql가지고 statement 셋팅 후 setString으로 ?에 인자를 넣는다. 
+>   * PreparedStatement pstat = null;
+>   * this.conn = DBUtil.open();
+>   * ? 넣어서 sql 작성 ,
+>   * pstat = conn.prepareStatement(sql);
+>   * pstat.setString(1, dto.getMemo());
 >   * stat.executeUpdate();
 >   * int result = stat.executeUpdate();
-> * 2번 방식
+> * 2번 방식 ( 나중 )
 >   * Statement stat = null;
 >   * ?없는 Sql작성 사이사이 str 넣음;
 >   * stat = conn.createStatement()
->   * rs = stat.executeQuery(sql);
+>   * rs = stat.executeQuery(sql); // !!나중에 sql을 넣는다. executeQuery가 받는다. 
+> * executeUpdate : insert, update, delete > int 값을 받는다. 영향받은 row 개수
+> * executeQuery  : select > ResultSet을 받아준다. 1개여도 여러개여도 가능
 
 ## ★ redirect 와 forward 개념
 * Redirect > 고객, 상담원의 개념
@@ -895,6 +900,145 @@ req.setAttribute("flist", flist);
 - 근데 공간이 남는다. 이것을 처리해야하려면 5 - list.size()%5 로 남는 공간 처리
 <img src="./imgs/TableElement.PNG">
 
+## 16. Memo 
+### 조금 다른 설계를 한다. 클래스 단위로 뷰 보여주는 클래스, 처리전용 클래스로 작업을 했었는데
+### 이제는 Method 단위로 함 (Add.java, AddOk.java 이렇게 분할하지 않음)
+### Category, Memo 1:1 관계 테이블 다룸 > Category, Memo를 포괄하는 큰 클래스를 더 둘 수가 있는데, 굳이 안둬도 아래처럼 서브쿼리로 한쪽 테이블로 받아버린다. 
+"com.test.memo"
+- "List.java" // 목록 
+  - String sql = "select tblMemo.*, (select icon from tblCategory where seq = tblMemo.cseq) as icon, (select color from tblCategory where seq = tblMemo.cseq) as color  from tblMemo order by seq desc";
+  - 두개의 1:1 테이블에서의 값을 꺼내는데 컬럼단 서브쿼리 사용
+- "Add.java"   // 글쓰기
+  - doGet, doPost가 있다. 
+  - doGet의 용도는 페이지를 보여주는데 데이터와 함께 보여줄 수 있다.
+  - doPost는 데이터를 body쪽에 담아온걸 처리 
+  - 서블릿 단으로 가서 아예 페이지를 forward나 redirect를 안하고 그냥 writer.writer.write("\<script>alert('failed'); history.back();</script>"); 스크립트를 write해버리는 경우도 있다. 이렇게 주면 alert창 뜨고, 뒤로 가는게 된다. 
+  - 
+- "Edit.java"  // 수정하기
+- "Del.java"   // 삭제하기
+  - 삭제시 redirect하는 코드가 있다. doGET 구현인데 Post냐, GET이냐는 크게 의미적으로는 중요하지 않음, 여기선 GET이 편함
+  - 성공시 resp.sendRedirect("/memo/list.do"); 실패시 writer.writer.write("\<script>alert('failed'); history.back();</script>"); 
+  - 
+- "MemoDAO.java"
+- "MemoDTO.java"
+- "CategoryDTO.java"
+// > CategoryDAO는 안만든다. 
+ 
+// ok페이지를 안만들어도 된다. 
+- webapp > WEB-INF>"views"
+  - list.jsp
+    - style 속성도 ${dto.color} 이런식으로 DB에 있는 정보로 지정
+    - \<span class="material-symbols-outlined">${dto.icon}</span> 구글 아이콘 같은거는 PCDATA 부분만 가져다가 쓰면 모양이 나오기 때문에 저부분을 DB에 넣어도 된다. 
+    - \<span onclick = "del(${dto.seq});">[d]</span>
+  - add.jsp
+  - edit.jsp
+    - list페이지 > edit페이지 여기서 한쪽 선택! > edit.java 근데 뭘 바꾸는가? seq를 list에서 받고 edit에선 hidden으로 가지고 있는다. 
+  - del.jsp
+    - 크게 의미 없다. 
+  - views > inc
+    - asset.jsp
+    - header.jsp
+
+## 17. Ajax
+## Ajax > 비동기다. 동기면 큰일..
+- ex01
+  - resp.sendRedirect("/ajax/ex01.do?count="+count); 리다이렉트 때 쿼리스트링 붙여
+- ex02 
+  - ResearchDTO 부분
+    - DTO를 어떻게 구성하느냐는 유연하게 할 수 있다. 
+    - 여러개의 String을 가진 String[]로 DTO를 구성할 수 있다. 
+    - String[] item = { rs.getString("item1"), rs.getString("item2"), rs.getString("item3"), rs.getString("item4") };
+    - 이경우엔 item1, item2, item3 이렇게 각각 내용을 적었다. 
+    - setTimeout(function() {location.reload();}, 5000); 5초마다 새로고침한다. ajax가 아닌 이방법도 일종의 방법이기도 하다. 
+- ex03
+  - 한 페이지에서 리로딩을 계속함 근데 문제점은 현재 작업하는 input이 있으면 그것도 날라감... 
+  - iframe 방법 > 페이지 안에 프레임을 넣는다.
+  - src속성으로 다른 jsp파일 혹은 url로 iframe으로 정의를 한다. 
+  - 이 방법은 ajax이전의 방법이다. 
+  - iframe으로 창을 띄움 거기서 변경점을 만들고 자신을 호출한 부모 jsp파일에 반영
+  - top.document는 해당 문서의 최상위문서인데 이 예제에선 iframe을 호출한 쪽의 문서를 조작하기 위해 씀
+  - 여기 iframe은 reload되어도 부모 페이지엔 영향을 안준다.
+  - 우편주소 입력창 같은걸 이런걸로 옛날에 많이 구현함
+- ex04
+  - const ajax = new XMLHttpRequest(); 라는 게 있다.
+  - 나이브한 ajax임 옛날버전!...
+  - ajax.onreadystatechange = function()  이렇게 이벤트를 정의한다. 콜백이벤트임
+  - ajax.open으로 GET이든 POST이든 요청을 한다.
+  - ajax.send() 이건 실제 연결이다. 전송 버튼을 누른 효과
+  - ajax.readyState ajax의 객체 상태를 나타내는데
+    - 4개의 값이 있음 4라고 찍히면 서버로부터 안전하게 받음
+  -  ajax.status = 200 상태값 
+  -  if(ajax.readyState == 4 && ajax.status == 200) 요렇게 확인
+``` js
+
+// GET 요청일 땐 send에 내용 안채움, 쿼리 스트링으론 붙일 수 있다. 
+ajax.open('GET', '/ajax/ex05data.do?txt2=' + $('#txt2').val()); // 
+ajax.send(); 
+
+// POST 요청일 때 send안에 내용을 채워넣는다. 일종의 바디임
+ajax.open('POST', '/ajax/ex05data.do'); 
+ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ajax.send('txt2='+$('#txt2').val());
+
+```
+
+
+### JSON 규격만들기
+``` java
+	
+     JSON > https://jsonformatter.curiousconcept.com 여기서 검증처리
+     - ★ 배열 그 자체도 json이 될 수 있다. 대신 쌍따옴표만 붙여줘...
+     - ★ Json 안에 배열도 OK
+     - ★ 키와 값을 쌍따옴표로 표기한다. 
+     - ★ 메소드는 표시 불가
+      {
+      "키" : "값",
+      "키" : "값"
+      }
+      [
+      [10, 20 , 30]
+      {
+        "키" : "값",
+        "키" : "값"
+      },
+      {
+        "키" : "값",
+        "키" : "값"
+      }
+      ]
+      {
+      "question": "질문"
+      }
+			
+```
+
+
+### tuddse
+```js
+	$('#btn3').click(()=>{
+		$.ajax({
+			type: 'GET',
+			url : '/ajax/ex07data.do',
+			data:'type=6',
+			dataType:'json',
+			success : (result)=>{
+				// result = {"question":"가장 자신 있는 프로그래밍 언어는?"}
+        // result로 받는데 result가 json이야, $( )는 만능이네?
+				$(result).each((index, item)=>{
+					$('#div3').append(
+						`
+							<div>\${item.name}</div>
+						`
+					); //SyntaxError: Unexpected token ']', ..."대문구 회기동"},]" is not valid JSON 콤마껴놓은거도 에러임 이거 json validator 형식맞게 하자
+				});
+			},
+			error: (a, b, c) => console.log(a, b, c)
+		});
+	
+	});
+```
+
+
 ## 잡다한 팁
 
 * 스크립틀릿 주석은 살짝 다르다. <%-- <%=  %> --%>
@@ -911,7 +1055,7 @@ req.setAttribute("flist", flist);
   * jsp에서 ` `안에 $를 넣을 때 template String 안에 escape시키기
 ``` js
 	$('#btnadd').click(()=>{ 
-    // html은 상관없는데 jsp에서는 !! $를 ★ el로 알아먹으니까 $ 앞에 \ 붙인다.
+    // html은 상관없는데 jsp에서는 script단 template String에서 !! $를 ★ el로 알아먹으니까 $ 앞에 \ 붙인다.
 		$('#list').append(`<div class="item">
 								<input type="file" name="attach\${n}">
 								<input type="button" value="X" 
@@ -933,3 +1077,19 @@ req.setAttribute("flist", flist);
   * input type="button"에 onclick 이벤트 등록해서 뒤로가기로 history.back(); 이라는 javascript를 사용한다.
   * a태그나 button태그, input태그 등의 태그요소에 onclick이벤트 걸 수 있고 form태그에는 onsubmit 이벤트를 걸 수 있다. 
   * html 태그 속성의 값으로 들어갈 땐 value=" " 이런식으로 " "로 쓰자, 혹은 ` ` template String, EL을 넣을 때는 "${dto.seq}"
+  * ★ 오라클 LIKE % 처리 
+    * String sql = "select '['||zip||'] '|| sido ||' '|| gugun ||' '|| dong||' '||bunji as address from zipcode where dong LIKE '%'||?||'%'";
+    * 중요한 것은 ? 부분인데 이걸 '' 씌워버리면 ?가 아니라 물음표 문자열로 인식해버린다. 
+    * 그래서 '%' 부분을 ||(문자열 붙이기) 연산자를 사용해서 '%'|| ? ||'%' 이렇게 처리하자. 
+    * \<span onclick = "location.href='/memo/edit.do?seq=${dto.seq}';">[e]</span> 여기부분에서 " "안에 ~ location.href 있고 이건 속성이니까 값쓰러면 ' '안에 넣고 하면 된다. ', " 의 경계를 조심하자. 
+    * input type="submit" 이어야 클릭했을 때 form태그가 동작한다. type="button"은 클릭시 form동작 안한다. 
+    * 메서드명이랑 사용하는 클래스명이 겹치는 경우에 java.util.List 요렇게 들고온다. 
+    * insert into tblMemo values (seqMemo.nextVal, '메모입니다.', default, 1); // default 적극 이용
+    * /<c:forEach var = "i" begin="0" end="3">
+			<div style="width: ${ dto.cnt[i] * 30 }px;">${dto.item[i]}(${dto.cnt[i]})</div>
+		</c:forEach> 
+    * var이라고 잡은거 el에는 el안에는 그냥 드간다. 배열을 따로 items라고 지정하지 않아도 for문을 구성한다. 
+    * \<c:if test="${result == 1}"> 이런식의 사용은 중요
+    * \<select id="address1">\<option value="0">검색해주세요\</option>\</select> 옵션은 value가 아니라 PCDATE를 채운다.
+    * \<body oncontextmenu="return false;"> 우클릭 창 방지 : 이거 기억하기 
+    * DOM을 $(DOM) 이렇게 처리가능하다. 이벤트 함수에서 $(this)

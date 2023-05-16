@@ -40,10 +40,10 @@
 					alert("검색 결과가 없습니다");
 				} else {
 					$("#sel1").children().remove();
-					$(result).each((index, item)=>{
+					$(result).each((index, item)=>{ //json을 query가 받았다.
 						console.log(item.address);
 						$("#sel1").append(`
-								<option value="\${item.address}">\${item.address}</option>
+								<option value="">\${item.address}</option>
 								`)
 					});
 				} 

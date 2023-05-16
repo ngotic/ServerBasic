@@ -15,11 +15,10 @@ public class AjaxTable extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//AjaxTable.java
-		
-		
-		
-		RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/ajaxtable.jsp");
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/ajaxtableadd.jsp"); 
+		// add 붙이면 추가기능
 		dispatcher.forward(req, resp);
+		
 	}
 
 }

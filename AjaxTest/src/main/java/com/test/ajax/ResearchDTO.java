@@ -8,6 +8,5 @@ public class ResearchDTO {
 	private String question;
 	private String[] item;
 	private String[] cnt;
-	
 }
 
