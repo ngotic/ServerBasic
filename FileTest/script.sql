@@ -1,6 +1,7 @@
 -- script.sql
 
 drop table tblFile;
+drop table seqFile;
 
 create table tblFile (
     seq number primary key,          -- 번호(PK)
@@ -11,10 +12,12 @@ create table tblFile (
 );
 
 create sequence seqFile;
-
+update tblFile set name='Hello' where seq = 22;
 select seq, filename from tblFile order by seq desc;
 
+delete from tblFile where seq =22;
 select * from tblFile;
+commit;
 
 -- 첨부파일 > 데이터베이스 관리
 -- 1. 파일을 직접 DB에 저장 > 바이너리 저장

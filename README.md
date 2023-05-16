@@ -320,8 +320,7 @@ https://m.blog.naver.com/pjok1122/221726178384 : 여기 사이트 좋은 정보 
   * ★ request내에 저장된걸 들고가야할 때 사용한다. 
  
 
-## ★ 아래의 주소록, 로그인, 로그아웃 특징은 form에서 action 처리를 .jsp 파일 쪽으로 처리한다. 
-## ★ 이게 전형적인 Model 1방식이다. 
+## ★ 아래의 주소록, 로그인, 로그아웃 특징은 form에서 action 처리를 .jsp 파일 쪽으로 처리한다. 이게 전형적인 Model 1방식이다. 
 
 ## 10. 주소록 CRUD
 1. 업무 > 생략 
@@ -700,11 +699,11 @@ ${n1}  // 사용시 이렇게 사용
 ``` java
 // 객체 초기화
 MultipartRequest multi = new MultipartRequest(
-									     req,    // 기존에 쓰던 request 객체
-									     req.getRealPath("/uploads"), // 서버 컴터에 파일이 저장될 위치
-									     1024 * 1024 * 100,            // 허용 사이즈
-									     "UTF-8",                       
-									     new DefaultFileRenamePolicy()); // 얘가 이름 바꾸는 일 한다.
+req,    // 기존에 쓰던 request 객체
+req.getRealPath("/uploads"), // 서버 컴터에 파일이 저장될 위치
+1024 * 1024 * 100,            // 허용 사이즈
+"UTF-8",                       
+new DefaultFileRenamePolicy()); // 얘가 이름 바꾸는 일 한다.
 ```
 - 기존에 쓰던 request객체, 서버 컴퓨터에 파일이 저장될 위치, 허용 사이즈, 인코딩 방식, 중복 처리 방침 등의 설정을 한다.
 

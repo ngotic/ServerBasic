@@ -12,3 +12,30 @@ Ajax, Asynchronouse JavaScript and XML
 - 순수 자바스크립트 버전
 - Jquery 버전 > 코드가 짧아서 쉽다. 
 - ES6 자바스크립트 버전
+파일생성
+ AjaxTest > script.sql
+파일 생성
+- "com.test.ajax" > Ex01.java
+                  > AjaxDAO.java
+                  > MemoDTO.java
+                  
+                  > Ex02.java
+                  > ResearchDTO.java
+-  views > ex01.jsp
+			ex02.jsp
+			ex03.jsp
+			ex03data.jsp
+			
+			
+			
+<!-- jQuery에서는 아래와 같이 iframe 계층을 엑세스 한다.
+ $(parent.document)           // 한단계 부모
+ $(parent.parent.document);  // 두단계 부모
+ $(top.document);             // 최상위 부모 -->
+<!-- http://setint.tistory.com/entry/jquery-iframe-%EC%86%8D%EC%84%B1 -->
+
+
+--------------------------------------------------
+>"Ex04.java"
+>"ex04.jsp"
+
