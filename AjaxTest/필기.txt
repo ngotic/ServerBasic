@@ -39,3 +39,35 @@ Ajax, Asynchronouse JavaScript and XML
 >"Ex04.java"
 >"ex04.jsp"
 
+
+
+
+- 테이블 문제
+- com.test.ajax > "Ex11.java"
+- views
+
+
+
+- 상품목록 페이지
+- com.test.ajax > 'Ex13.java'
+- com.test.ajax > 'Ex13Add.java'
+- com.test.ajax > 'Ex13Edit.java'
+- com.test.ajax > 'Ex13Del.java'
+- com.test.ajax > 'Ex13DTO.java'
+
+- views > ex13.jsp
+
+- webapp > "pic" > pic.png 복사  
+
+<td><fmt:formatNumber value="${dto.price}"/>원</td>
+
+<td>\${$('#price').val()}원</td>
+
+
+/* <td>\${parseInt($('#price').val()).toLocaleString()}원</td> */
+
+
+
+Promise
+$.post()
+$.get() 이건 나중에 한다. 

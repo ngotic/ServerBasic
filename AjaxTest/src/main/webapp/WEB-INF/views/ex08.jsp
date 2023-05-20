@@ -47,7 +47,7 @@
 <script>
 	$('#btn1').click(()=>{
 		window.open('/ajax/ex08check.do', 'idcheck', 'width=350 height=350');
-	});
+	}); // WEB-INF에 jsp파일이 있어서 서버단까지 가서 호출해야 한다. 
 	
 	$('#btn2').click(()=>{
 		$.ajax({

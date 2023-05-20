@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.test.my.DBUtil;
 
@@ -119,7 +120,6 @@ public class AjaxDAO {
 
 	public List<ZipCode>  search(String dong)  {
 		String sql = "select * from zipcode where dong like '%' || ? || '%'";
-		
 		try {
 			pstat = conn.prepareStatement(sql);
 			pstat.setString(1, dong);
@@ -142,7 +142,255 @@ public class AjaxDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void cell(Ex11DTO dto) {
+
 		
+	}
+
+	public boolean checkCell(Ex11DTO dto) {
+		
+		try {
+			String sql = "select count(*) as cnt from ajaxTable2" + "where x =? and y = ?";
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, dto.getX());
+			pstat.setString(2, dto.getX());
+			
+			rs = pstat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("cnt") == 1 ? true : false;
+			}
+			
+		} catch (Exception e) {
+
+		}
+		
+		return false;
+	}
+
+	public void editCell(Ex11DTO dto) {
+		String sql = "update ajaxTable2 set ck=? where x=? and y=?";
+		try {
+			System.out.println(">>"+dto.getCk());
+			pstat  = conn.prepareStatement(sql);
+			pstat.setString(1, dto.getCk());
+			pstat.setString(2, dto.getX());
+			pstat.setString(3, dto.getY());
+			pstat.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	public void addCell(Ex11DTO dto) {
+		
+		try {
+			String sql = "insert into ajaxTable2 (seq, x, y, ck) values(tableSeq2.nextVal, ?, ?, 'y')";
+			
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, dto.getX());
+			pstat.setString(2, dto.getY());
+			
+			pstat.executeUpdate();
+			
+		} catch (Exception e) {
+			
+		}
+		
+	}
+
+	public List<Ex11DTO> listCell() {
+		try {
+			String sql = "select * from ajaxTable2";
+			stat = conn.createStatement();
+			rs = stat.executeQuery(sql);
+			
+			List<Ex11DTO> list = new ArrayList<Ex11DTO>();
+			
+			while(rs.next()) {
+				Ex11DTO dto = new Ex11DTO();
+				dto.setX(rs.getString("x"));
+				dto.setY(rs.getString("y"));
+				dto.setCk(rs.getString("ck"));
+				list.add(dto);
+			}
+			return list;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void editLine(Ex12DTO dto) {
+		try {
+			String sql = "update tblJournal set line = ? where seq= ?";
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, dto.getLine());
+			pstat.setString(2, dto.getSeq());
+			pstat.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	public List<Ex12DTO> listLine() {
+		
+		try {
+			
+			String sql = "select * from tblJournal order by seq asc";
+			stat = conn.createStatement();
+			rs = stat.executeQuery(sql);
+			List<Ex12DTO> list = new ArrayList<Ex12DTO>();
+			
+			while(rs.next()) {
+				Ex12DTO dto = new Ex12DTO();
+				dto.setSeq(rs.getString("seq"));
+				dto.setLine(rs.getString("line"));
+				list.add(dto);
+				
+			}
+			return list;
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public int addProduct(Ex13DTO dto) {
+		
+		
+		try {
+			
+			String sql = "insert into tblProduct (seq, name, price, color, pic) values (seqProduct.nextVal, ?, ?, ?, ?)";
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, dto.getName());
+			pstat.setString(2, dto.getPrice());
+			pstat.setString(3, dto.getColor());
+			pstat.setString(4, dto.getPic());
+			
+			return pstat.executeUpdate();
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+
+	public List<Ex13DTO> listProduct() {
+		try {
+			String sql = "select * from tblProduct order by seq desc";
+			stat = conn.createStatement();
+			rs = stat.executeQuery(sql);
+			List<Ex13DTO> list = new ArrayList<Ex13DTO>();
+			while(rs.next()) {
+				Ex13DTO dto = new Ex13DTO();
+				dto.setSeq(rs.getString("seq"));
+				dto.setName(rs.getString("name"));
+				dto.setPrice(rs.getString("price"));
+				dto.setColor(rs.getString("color"));
+				dto.setPic(rs.getString("pic"));
+				list.add(dto);
+			}
+			return list;
+			
+		} catch (Exception e) {
+
+		}
+		return null;
+	}
+
+	public Ex13DTO getProduct() {
+		
+		try {
+			String sql = "select seq, pic from tblProduct "
+					+ "where seq= (select max(seq) from tblProduct)";
+			
+			stat = conn.createStatement();
+			rs = stat.executeQuery(sql);
+			if(rs.next()) {
+				Ex13DTO dto = new Ex13DTO();
+				dto.setSeq(rs.getString("seq"));
+				dto.setPic(rs.getString("pic"));
+				System.out.println("getProduct: "+rs.getString("pic"));
+				return dto;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public int delProduct(String seq) {
+		try {
+			String sql = "delete from tblProduct where seq = ?";
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, seq);
+			
+			return pstat.executeUpdate();
+		} catch(Exception e) {
+			
+		}
+		return 0;
+	}
+
+	public int editProduct(Ex13DTO dto) {
+
+		String sql = "update tblProduct set name=?, price=?, color=?  where seq=?";
+		
+		try {
+			
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, dto.getName());
+			pstat.setString(2, dto.getPrice());
+			pstat.setString(3, dto.getColor());
+			pstat.setString(4, dto.getSeq());
+			return pstat.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return 0;
+	}
+
+	public List<Ex13DTO> listProduct2(Map<String, Integer> map) {
+
+		try {
+			
+			String sql = "select * from (select a.*, rownum as rnum from tblProductCopy a) where rnum between ? and ?";
+			pstat = conn.prepareStatement(sql);
+			pstat.setInt(1, map.get("begin"));
+			pstat.setInt(2, map.get("end"));
+			
+			rs = pstat.executeQuery();
+			
+			List<Ex13DTO> list = new ArrayList<Ex13DTO>();
+			while(rs.next()) {
+				Ex13DTO dto = new Ex13DTO();
+				dto.setSeq(rs.getString("seq"));
+				dto.setName(rs.getString("name"));
+				dto.setPrice(rs.getString("price"));
+				dto.setColor(rs.getString("color"));
+				dto.setPic(rs.getString("pic"));
+				list.add(dto);
+			}
+			return list;
+			
+		} catch (Exception e) {
+
+		}
+		return null;
 	}
 	
 }

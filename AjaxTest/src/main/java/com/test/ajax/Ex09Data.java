@@ -17,25 +17,30 @@ public class Ex09Data extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//Ex09Data.java
-		String dong = req.getParameter("dong");
 		
+		
+		req.setCharacterEncoding("UTF-8");
+		
+		String dong = req.getParameter("dong");
+		System.out.println(dong);
 		AjaxDAO dao = new AjaxDAO();
 		List<ZipCode> list= dao.search(dong);
 		
 		
 		resp.setContentType("application/json");
-		resp.setCharacterEncoding(dong);
+		resp.setCharacterEncoding("UTF-8");
 		PrintWriter writer = resp.getWriter();
 		String temp = "[";
 		for ( ZipCode dto : list) {
 			temp += String.format("\"[%s] %s %s %s %s\","
 					, dto.getZip()
 					, dto.getSido()
+					, dto.getGugun()
 					, dto.getDong()
 					, dto.getBunji());
 		}
 		
-		temp = temp.substring(0, temp.length() -1);
+		temp = temp.substring(0, temp.length() -1); // 마지막 , 제거
 		temp += "]";
 		writer.print(temp);
 		writer.close();

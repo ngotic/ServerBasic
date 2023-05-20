@@ -1,0 +1,113 @@
+1. 기술 구현
+2. 업무 이해 능력..
+
+새 프로젝트 
+ToyProject
+
+- Dynamic Web
+- context name : toy;
+- web.xml (체크O)
+
+1. 주제 
+ - 토이 프로젝트 
+ 
+2. 요구분석 
+ - 회원
+ - 게시판(메인업무)
+ - 기타 등....
+ 
+3. 전체 구성(페이지 관계도)
+ - 기능별.. 
+ - draw.io
+ 
+4. 화면 설계
+ - 생략
+
+5. 스토리 보드 
+ - 생략
+ 
+6. 데이터베이스
+ - ERD 
+ 
+7. 스크립트 작업
+	- DDL,DML
+	- ToyProject
+	  - ddl.sql
+	  - dml.sql
+
+8. 기초 데이터 / 더미 데이터
+ - DML
+ 
+9. 구현
+ - 기초 작업
+ 	- 패키지 
+ 		a. com.test.toy    : 메인 패키지
+ 		b. com.test.toy.user : 회원
+ 		c. com.test.toy.user.repository : DB 관련
+ 			클래스 파일 50개 ~ 100개
+ 		d. com.test.toy.board  : 게시판
+ 		e. com.test.toy.board.repository : DB
+ 	- 파일
+ 		a. com.test.toy 
+ 			- Index.java    : 시작 페이지 
+ 			- Template.java : 템플릿 페이지 
+ 			
+ 		b. com.test.user
+ 			- Register.java : 회원가입
+ 			- Login.java : 로그인
+ 			- Logout.java : 로그아웃
+ 			- Info.java : 정보 확인
+		c. com.test.user.repository
+			- UserDAO.java
+			- UserDTO.java
+		d. com.test.toy.filter
+			- EncodingFilter.java
+		e. com.test.toy.board
+			- Board.java : 목록보기 
+			- Add.java   : 
+			- View.java  : 
+			- Edit.java  :
+			- Del.java   :
+		f. com.test.toy.board.repository 
+			- BoardDAO.java
+			- BoardDTO.java
+			 
+	- 뷰
+		a. views 
+			 index.jsp : 메인 페이지
+			 -template.jsp 템플릿 페이지 
+			 
+		b. views > inc : 조각 페이지 
+			- asset.jsp
+			- header.jsp
+		c. views > user
+			- register.jsp
+			- login.jsp
+			- info.jsp
+		d. views > board
+			- board.jsp
+			- add.jsp
+			- edit.jsp
+			- view.jsp
+			- del.jsp
+		
+		
+			- 라이브러리 
+				lib - 
+					AjaxTest > 7개 복사
+			- 리소스 
+				- webapp > asset > js : *.js 폴더
+				- webapp > asset > css : *.css 폴더
+				- webapp > asset > image : 이미지폴더
+				- webapp > asset > pic : 회원 프로필 사진 폴더
+				- webapp > asset
+							- favicon.ico
+		
+		
+9.1 레이아웃
+	- Template.java
+	- template.jsp
+ - 업무별 작업
+ 
+
+

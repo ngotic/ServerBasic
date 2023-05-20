@@ -19,11 +19,11 @@ public class Ex07Data extends HttpServlet {
 		//Ex07Data.java
 		String type= req.getParameter("type");
 		
-		if(type.equals("1")) {
-			m1(req, resp);
-		} else if(type.equals("2")) {
+		if(type.equals("1")) {        // text로 보낼 때
+			m1(req, resp);  
+		} else if(type.equals("2")) { // ,로 구분하는 csv 형식으로 보내는 경우 
 			m2(req, resp);
-		} else if(type.equals("3")) {
+		} else if(type.equals("3")) { // 
 			m3(req, resp);
 		} else if(type.equals("4")) {
 			m4(req, resp);

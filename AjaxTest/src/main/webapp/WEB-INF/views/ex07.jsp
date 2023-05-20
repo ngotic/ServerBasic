@@ -45,7 +45,7 @@
 			url : '/ajax/ex07data.do',
 			data: 'type=1',
 			dataType : 'text', // 서버가 Ajax에게 돌려주는 데이터 형식 같이 선언해야 한다.
-			// (text, xml, json)
+			// (text, xml, json) > ★★★★★ 받을 데이터타입이다!!!!!!!!!!!!!!!!!
 			success : (result) => {
 				$('#div1').text(result)
 			},
@@ -78,22 +78,21 @@
 		});
 		 */
 		 
-		/* $.ajax({
+	/* 	$.ajax({
 			type:'GET',
 			url : '/ajax/ex07data.do',
 			data: 'type=3',
 			dataType : 'xml', // 서버가 Ajax에게 돌려주는 데이터 형식 같이 선언해야 한다.
 			// (text, xml, json)
 			success : (result) => { // $('#div1').text(result)
-				//$('#div2').text(result)
-				$('#div2').text($(result).find('question').text());
-				//$('#div2').text($(result).find('#q1').text());
+				//$('#div2').text(result) //[object XMLDocument]
+				$('#div2').text($(result).find('question').text()); //태그로 찾던지
+				//$('#div2').text($(result).find('#q1').text());//id로 찾던지 
 			},
 			error : (a, b, c) => console.log(a, b, c)
-		}); */
+		});  */
 		
-		
-		$.ajax({
+		/* $.ajax({
 		type:'GET',
 		url : '/ajax/ex07data.do',
 		data: 'type=4',
@@ -116,7 +115,8 @@
 			});// 사람수 만큼 찾아준다.
 		},
 		error : (a, b, c) => console.log(a, b, c)
-		}); 
+		});  */
+		
 	});
 	
 	$('#btn3').click(()=>{

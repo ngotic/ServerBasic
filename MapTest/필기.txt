@@ -1,0 +1,17 @@
+
+"com.test.map"
+	- Map.java
+	- MapDAO.java
+	- PlaceDTO.java
+	- CategoryDTO.java
+	
+- webapp > WEB-INF > "views"
+	- "map.jsp"
+	
+- webapp > WEB-INF > lib
+	- jackson..
+	- json..
+	- jstl..
+	- lombok
+	- my..
+	- ojdbc

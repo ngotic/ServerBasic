@@ -1,5 +1,6 @@
 package com.test.ajax;
-import lombok.Data;
+import lombok.*;
+
 
 @Data
 public class AddressDTO {

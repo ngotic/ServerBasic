@@ -37,15 +37,13 @@
 	
 	
 	$('#dong').keydown(()=>{
-		
 		if(event.keyCode == 13){
 			$('#btn').click(); // 애뮬레이터 함수 // > 진짜 이벤트가 발생 
 		}
-		
 	});
 	
 
-	$('#address1').change(()=>{
+	$('#address1').change(()=>{ // 변경이 되면 다음칸으로 focus
 		$('#address2').focus();
 	});
 

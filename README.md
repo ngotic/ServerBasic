@@ -33,11 +33,11 @@ public class Ex02 extends HttpServlet {
     public void doGet(HttpServletRequest request,
                 HttpServletResponse response) throws IOException, ServletException{
                     
-                    response.setCharacterEncoding("UTF-8"); // 브라우저에 보이는 인코딩 설정
-			        PrintWriter writer = response.getWriter();
+                    response.setCharacterEncoding("UTF-8"); // 브라우저에 보이는 인코딩 설정(이거는 meta 태그도 같이 해줘야 한다. )
+			              PrintWriter writer = response.getWriter();
 
                     writer.println("<html>");
-                    ...
+                    ... 
                     writer.println("</html>");
 
                     writer.close();
@@ -45,6 +45,14 @@ public class Ex02 extends HttpServlet {
 }
 
 ```
+* ★ 서블릿에서 브라우저로 직접 출력해줄 때 response.setCharacterEncoding("UTF-8"); 이 필요, 근데 이것만 해서는 안된다. 
+* ★ html 형식으로 response로 writer를 꺼내서 print를 해주는 경우에는 브라우저는 meta태그 charset='UTF-8'를 인식해야 한글을 제대로 표기할 수 있다. 
+### ★서블릿에서 브라우저로 직접 출력시
+* writer.write("<head><meta charset='UTF-8'></head>"); 이부분을 꼭 넣어주거나 
+* resp.setContentType("text/html;charset=utf-8");를 써야 한다.
+* 택 1해라 
+* 그래야 브라우저에서 한글이 제대로 뜬다. 
+
 
 ## 4. 서블릿 작성 예시 + 추가
 - 서블릿은 아래의 메서드를 오버라이드하여 작성할 수 있다.
@@ -977,13 +985,17 @@ ajax.send();
 
 // POST 요청일 때 send안에 내용을 채워넣는다. 일종의 바디임
 ajax.open('POST', '/ajax/ex05data.do'); 
-ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ajax.setRequestHeader('Content-Type', 
+          'application/x-www-form-urlencoded');
 ajax.send('txt2='+$('#txt2').val());
 
+// ★ application/x-www-form-urlencoded : 이게 form태그의 default encoded type이다. 
+
 ```
-
-
 ### JSON 규격만들기
+* 네트워크상에서는 String형태로 json format이 돌아다닌다. 근데 규격엔 맞아야 한다.
+* 키, 값을 쌍따옴표로 표기한다. 자바단에서 키값 쌍따옴표로 표기할 때 "는 escape를 시켜줘야 한다.
+* 이 부분을 주의하자 
 ``` java
 	
      JSON > https://jsonformatter.curiousconcept.com 여기서 검증처리
@@ -1009,19 +1021,22 @@ ajax.send('txt2='+$('#txt2').val());
       {
       "question": "질문"
       }
-			
 ```
-
+### ajax 사용처
+* 특정 이벤트 발생시 서버에서 값을 가져오려고 할 때, 혹은 서버로 값을 보내어 검증을 하려고 할 때 ajax를 사용한다. 
 
 ### tuddse
+* 이게 가장 무난한 형태이다. 
+* 아래의 예제는 GET으로 보내고, data에 type=6이라는 쿼리스트링을 붙여줌 
+* async : true, // 비동기(true), 동기(false)로 설정가능한데 웬만해선 비동기 그래서 이거 건들 일이 없다.(ex06)
 ```js
 	$('#btn3').click(()=>{
 		$.ajax({
-			type: 'GET',
-			url : '/ajax/ex07data.do',
-			data:'type=6',
-			dataType:'json',
-			success : (result)=>{
+			type: 'GET',               // 요청 method
+			url : '/ajax/ex07data.do', // 요청되는 url 
+			data:'type=6',             // 보내는 데이터
+			dataType:'json',           // 받을 데이터의 타입
+			success : (result)=>{ // 성공적으로 수신하였을 때 받는 데이터를 가지고 하는 함수처리
 				// result = {"question":"가장 자신 있는 프로그래밍 언어는?"}
         // result로 받는데 result가 json이야, $( )는 만능이네?
 				$(result).each((index, item)=>{
@@ -1034,10 +1049,807 @@ ajax.send('txt2='+$('#txt2').val());
 			},
 			error: (a, b, c) => console.log(a, b, c)
 		});
-	
 	});
 ```
 
+
+## ex07은 여러 타입별 ajax
+## 받는 데이터 타입 
+* text, xml, json이다. 
+* text로 서버에서 보내주는 경우 > resp.setContentType("text/plain"); 설정
+  * csv나 걍 값 
+* xml로 서버에서 보내주는 경우 > resp.setContentType("text/xml"); 
+  * 간단하게 특정태그의 값을 찾는 경우
+  * 어떤 item 태그 안에 각각 seq태그, name태그, age태그, address태그 안에 값이 들어있음
+    * 아이템 리스트를 전송하는 경우
+* json으로 서버에서 보내주는 경우 > resp.setContentType("application/json");
+  * { "result" : "1" }
+  * [{ },{},{},{} ] 이런 경우도 있고
+``` js 
+writer.print("<?xml version='1.0' encoding='UTF-8' ?>");
+writer.printf("<question id='q1'>%s</question>", dto.getQuestion());
+// 받는 데이터 타입을 xml로 설정, $( ) 제이쿼리로 받고 find를 사용해서 태그를 찾는다. id 기준이던지 뭘로 암튼 찾는다. 
+	$.ajax({
+			type:'GET',
+			url : '/ajax/ex07data.do',
+			data: 'type=3',
+			dataType : 'xml', // 서버가 Ajax에게 돌려주는 데이터 형식 같이 선언해야 한다.
+			// (text, xml, json)
+			success : (result) => { // $('#div1').text(result)
+				//$('#div2').text(result) //[object XMLDocument]
+				$('#div2').text($(result).find('question').text()); //태그로 찾던지
+				//$('#div2').text($(result).find('#q1').text());//id로 찾던지 
+			},
+			error : (a, b, c) => console.log(a, b, c)
+		}); 
+```
+``` js
+	String temp="";
+		temp+="[";
+		
+		for(AddressDTO dto : list) {
+			temp += "{";
+			temp +=String.format("\"seq\" : \"%s\",", dto.getSeq());
+			temp +=String.format("\"name\":\"%s\",", dto.getName());
+			temp +=String.format("\"age\":%s,", dto.getAge());
+			temp +=String.format("\"tel\":\"%s\",", dto.getTel());
+			temp +=String.format("\"address\":\"%s\"", dto.getAddress());
+			temp +="}";
+			temp +=",";// 환경에 따라서 에러가 나는 경우가 있고 안나는 경우가 있다. 
+		}
+		temp = temp.substring(0, temp.length()-1); // 마지막 콤마제거 코드
+		temp+="]";
+    // 서버쪽에서 저렇게 보낸걸 아래에서 받음
+    // 배열도 json 형식임
+    // jquery에 담아서 each로 돌림
+    $.ajax({
+			type: 'GET',
+			url : '/ajax/ex07data.do',
+			data:'type=6',
+			dataType:'json',
+			success : (result)=>{
+				// result = {"question":"가장 자신 있는 프로그래밍 언어는?"}
+				// alert(result.question);
+				$(result).each((index, item)=>{
+					$('#div3').append(
+						`
+							<div>\${item.name}</div>
+						`
+					); 
+				});
+			},
+			error: (a, b, c) => console.log(a, b, c)
+		});
+
+```
+
+
+### ex08.jsp  > ID 중복검사 예제
+* 버튼을 누르면 id 중복검사 창이 뜸 
+``` js
+$('#btn1').click(()=>{
+		window.open('/ajax/ex08check.do', 'idcheck', 'width=350 height=350');
+}); 
+// WEB-INF에 jsp파일이 있어서 서버단을 경유해야 한다. 
+// idcheck 이름부여, width height 셋팅
+// 1. 창을 띄움으로서 페이지 새로고침 없이 다른창에서 중복처리 로직을 한다. > 창에서는 자신을 호출한 쪽으로 opener.document.getElementById('id1').value = '${id}'; 이렇게 해서 태그 내용 변경 가능
+// result 값에 따라 btn의 disable 설정가능
+// $('#btn1').attr('disabled', true);
+
+// 2. ajax 방식으로 하면 창을 띄우지 않고 바로 페이지에서 중복여부만 받아와서 출력해주면 된다. 
+```
+### ex09
+* 우편주소 검색 > db에 있는거 검색해서 가져오기 
+``` js
+// 버튼 클릭스 id = address1 이 있는 태그의 html내용 제거
+// 그 안에 내용을 option으로 채운다. 
+	$('#btn1').click(()=>{
+		$('#address1').html('');
+		$.ajax({
+				type: 'GET',
+				url : '/ajax/ex09data.do',
+				data: 'dong='+$('#dong').val(),
+				dataType : 'json',
+				success: (result) => {
+					$(result).each((index, item) => {
+						$('#address1').append(
+						`
+							<option value=''>\${item}</option>
+						`		
+						);
+					});
+				},
+				error: (a, b, c) => console.log(a, b, c)
+		});
+	});
+```
+
+### ex10 
+* form 전송과 ajax
+  * form 태그를 아래처럼 submit을 할 수 있다. 
+  * form 태그가 submit을 하면 action으로 등록된 위치로 동작하거나 없으면 자기 자신으로 새로고침한다.
+* ★ 이러한 새로고침을 막으려면 event.preventDefault();, return false; 사용한다.
+* 객체형태, 쿼리스트링형태는 data로 들어가서 서버에서 getParameter로 받을 수 있지만 json stringify는 그렇게 받을 수 없다.
+``` js
+
+//서블릿에서 받는 형태
+String txt1 = req.getParameter("txt1");
+String txt2 = req.getParameter("txt2");
+String txt3 = req.getParameter("txt3");
+String txt4 = req.getParameter("txt4");
+String txt5 = req.getParameter("txt5");
+
+//★ 보내는 데이터 형태 
+// > 객체 형태
+const obj = { // 이건 굉장히 체계적이고 이걸 전송할 수 있도록 지원을 해준다.  > req.getParameter()로 받음
+		txt1 : $('#txt1').val(),
+		txt2 : $('#txt2').val(),
+		txt3 : $('#txt3').val(),
+		txt4 : $('#txt4').val(),
+		txt5 : $('#txt5').val()
+	}; 
+// > 쿼리 스트링 형태 > req.getParameter()로 받음
+let data = 'txt1=' + $('#txt1').val()
+    + '&txt2=' + $('#txt2').val()
+    + '&txt3=' + $('#txt3').val()
+    + '&txt4=' + $('#txt4').val()
+    + '&txt5=' + $('#txt5').val();
+
+// json 모양비슷하게 Stringify 시킨 형태 > req.getParameter()로 못받음 > 사실 json규격에 안맞음
+// 자바단 library에는 이걸 ' 때문에 인식못함
+let jsonlikeStr = "{'txt1' : '딸기', txt2 : '바나나','txt3' : '포도'}"; // 
+
+$('#form1').submit(( ) => {
+		$.ajax({
+			type:'GET',
+			url: '/ajax/exdata.do',
+			data: obj, // 이렇게 넣으면 된다. 심플
+			//data : jsonlikeStr, // 이거 안됨
+      //data : data, //이것도 된다! 
+			success: (result) => {},
+			error: (a, b, c)=>console.log(a,b,c)
+		});
+		event.preventDefault(); // 
+		return false;           // 
+	});
+
+// $('#form1').serialize()를 사용하면 한방에 다 보낼 수 있다. > req.getParameter()로 받음
+$('#form1').submit(()=>{
+	  //	alert($('#form1').serialize()); // 여기서 alert창에선 퍼센트 인코딩 되어 있다. 
+    // 서버단에서는 getParameter로는 제대로 들어온다.
+    // 보내는 방법 3
+		// 이거 쓰면 한방에 다 들어간다. 
+		// ★ 반드시 name 속성이 있어야 한다. name에 있는것들 직렬화한다는 방법
+		$.ajax({
+			type:'GET',
+			url:'/ajax/ex10data.do',
+			data: $('#form1').serialize(), // 편하다.
+			success: (result) => {},
+			error : (a, b, c) => console.log(a, b, c)
+		})
+	});
+
+//  list를 data로 보내는 형태 > 객체느낌으로 보낸다. 그리고 ★ traditional: true라는 옵션을 켜야한다.
+// 이런 경우는 getParameter로 받긴하는데 받는 방법이 살~짝 다르다. list라는 키에 배열을 담아서 그렇다. 
+$('#form1').submit(()=>{
+  //<input type="checkbox" name="aaa">
+  const list = ['사과', '바나나', '딸기', '포도', '귤'];
+  $.ajax({
+    type:'GET',
+    url:'/ajax/ex10data.do',
+    traditional: true, // ★ 요렇게 한쌍> 이것이 ajax 배열 넘기기 옵션 
+    data: {            // ★ 리스트를 담는 객체 정의
+      list:list
+    }, // 편하다.
+    success: (result) => {},
+    error : (a, b, c) => console.log(a, b, c)
+    
+  })
+});
+
+// 서블릿 단에서는 아래와 같이 받는다.
+// list라는 이름으로 Values를 찾는 방식 
+String[] list = req.getParameterValues("list");
+// getParameterValues는 String[]로 리턴해준다. 
+for(String item : list) {
+  System.out.println(item);
+}
+
+
+// 주의 해야 할점은 key, value 감쌀 때 홑따옴표 붙이면 안된다. 절대안댐...
+// json화를 해야할 때 객체를 만들고 JSON.stringify를 사용
+// 혹은 간단한 json을 보낼 땐 "{ \"key\":\"value\"  }" : 작업을 해주자 
+$('#form1').submit(( ) => {
+		alert(JSON.stringify("{'txt1' : '딸기', 'txt2' : '바나나', 'txt3' :'포도', 'txt4':'배', 'txt5':'멜론' }")); // 이렇게 한다고 JSON String 규격에 맞춰지진 않음
+		$.ajax({
+			type:'POST',
+			url: '/ajax/ex10data.do',
+			contentType: 'application/json',
+			//data : JSON.stringify(obj),// ★ 객체를 stringify해서 json문자열화는 가능
+			//data : "{\"txt1\" : \"딸기\", \"txt2\" : \"바나나\", \"txt3\" :\"포도\", \"txt4\":\"배\", \"txt5\":\"멜론\" }",  // ★ json문자열화 규격으로 정의하여 직접 보내줌 > 이건 가능하다.
+			//data : "{'txt1' : '딸기', 'txt2' : '바나나', 'txt3' :'포도', 'txt4':'배', 'txt5':'멜론' }", // json String ★ 이거 안된다.
+			// data: JSON.stringify("{'txt1' : '딸기', 'txt2' : '바나나', 'txt3' :'포도', 'txt4':'배', 'txt5':'멜론' }"), // ★이거도 안된다.
+			dataType: 'json',
+			success: (result) => {},
+			error: (a, b, c)=>console.log(a,b,c)
+		});
+		event.preventDefault();
+		return false; 
+	});  
+  // jackson-databind
+  // json-simple 이거 두개 라이브러리 써야 한다. 
+
+
+    // ★ JSONParser가 parse를 하고 객체화된 json obj를 반환하는 구조 
+    // 위의 json을 아래 JAVA단에서는 JSONParser.parse(String s); 이걸로 파싱해서 JSONObject로 돌려주고 get으로 해당 키값을 접근한다.
+    // ★ JSONObject는 get, put정도만 일단은 알면 된다.
+
+    //자바에서는 파일입출력할떄 이렇게 썼었다.
+    //BufferedReader reader = new BufferedReader(new FileReader("파일경로"));
+
+    // 웹에서는 Stream을 받아와야 한다. InputStreamReader객체 안에다가 req.getInputStream()을 연결
+    // BufferedReader가 데이터를 받아올 준비가 됨
+	  BufferedReader reader = new BufferedReader(new InputStreamReader(req.getInputStream()));
+		String line = null;
+		String temp ;
+		while((temp = reader.readLine()) != null) { // 이거 while 떄문에 line이 null
+			System.out.println(temp); 
+			line = temp;
+		}
+		reader.close(); 		// 문자열 형태로 받는다.
+		JSONParser parser = new JSONParser();
+		try {
+	
+			JSONObject obj = (JSONObject)parser.parse(line); // object로 받아서 다운캐스팅
+			System.out.println(obj.get("txt1"));  
+			System.out.println(obj.get("txt2"));
+			System.out.println(obj.get("txt3"));
+			System.out.println(obj.get("txt4"));
+			System.out.println(obj.get("txt5"));
+			//JSONObject 인데 이거 결과값으로 보내줄 때 writer.print(obj);로 보내주면 된다.
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+    // ★ 자바단에서 DTO값을 JSON으로 보내주는 예제1)
+    // JSONObject에 put으로 key, value를 채워서 보내준다.
+    AjaxDAO dao = new AjaxDAO();
+		ResearchDTO dto = dao.getResearch(1);
+		JSONObject obj= new JSONObject();
+		
+		obj.put("question", dto.getQuestion());
+		obj.put("seq", dto.getSeq());
+		//System.out.println(obj.toString());
+		
+		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("application/json");
+		
+		PrintWriter writer;
+		System.out.println(obj); // toString 그럼 toString을 json으로 정의하면 되는거 아님?
+		writer = resp.getWriter();
+		writer.print(obj);
+		writer.close();
+		
+    // ★ 자바단에서 DTO값의 List를 JSON으로 보내주는 예제2)
+    // JSONObject에 put으로 key, value를 채우고, JSONArray로 add해서 보내준다.
+    AjaxDAO dao = new AjaxDAO();
+		List<AddressDTO> list = dao.listAddress();
+		JSONArray arr = new JSONArray();
+		for(AddressDTO dto : list) {
+			JSONObject obj = new JSONObject();
+			obj.put("name", dto.getName());
+			obj.put("age", dto.getAge());
+			obj.put("address", dto.getAddress());
+			arr.add(obj);
+		}
+		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("application/json");
+		PrintWriter writer;
+		writer = resp.getWriter();
+		writer.print(arr);
+		writer.close();
+
+  // ★ 마무리로 writer.print로 JSONObject를 넣어줄 수 있고, JSONArray를 넣어줄 수 있다.
+
+  $('#btn2').click(()=>{
+		$.ajax({
+			type: 'GET',
+			url : '/ajax/ex10data.do',
+			
+			dataType: 'json',
+			success: (result) => {
+        // ◎ 하나만 받던지> 하나받으면 바로 result.seq로 접근
+				//$('#result').append('<div>' + result.seq+ '</div>');
+				//$('#result').append('<div>' + result.question+ '</div>');
+        // ◎ 여러개를 받으면 jquery안에 넣어서 item으로 꺼냄 리스트라서 item은 json상태임
+				$(result).each((index, item) =>{
+					$("#result").append('<div>'+ item.name + '</div>');
+					$("#result").append('<div>'+ item.age + '</div>');
+					$("#result").append('<div>'+ item.address + '</div>');
+					$("#result").append('<hr>');
+				});
+			},
+			error: (a, b, c) => console.log(a, b, c)
+		});
+	});
+
+```
+
+## ex11
+* table의 td태그에는 CellIndex라는 속성이 제공된다.
+* tr은? 어떻게 구할 까? parentElement로 한번 올라가서 rowIndex 속성을 사용
+* $(this).css('background-color')는 rgb문자열값을 반환
+* $(this).css('background-color', 'transparent'); 라고 지정하면 하얀색으로 배경댐
+```js
+$('#tbl1 td').click(function(){
+let x = this.cellIndex; // 
+let y = this.parentElement.rowIndex; 
+});
+```
+
+## ex12 
+* ★★ 클로저의 사용 매우 중요하다.
+* 이벤트 함수에서 또 이벤트 함수로 들어간 경우 두번째 이벤트함수에서 첫번째 이벤트 함수의 this를 사용하고 싶을 때 쓴다. ( 화살표함수에선 this 안되고 event.target )
+``` js
+
+$('.line').each((index, item)=>{  
+  // item은 DOM이다. 그래서 $()에 넣어서 제이쿼리 객체 만듬
+  // jquery 객체는 index()라는 함수제공 
+		console.log($(item).index()); // 0, 1, 2, 3, 4 쭈욱 출력
+});
+
+
+// 이벤트를 겹겹이 쓰는 경우 
+// 키 다운을 하고 5초가 지나면 수정한 내용을 저장 안내 메세지가 보인다.
+$('.line').keydown(function(){
+		clearTimeout(timer);
+		let temp = this;
+		timer = setTimeout(function() {
+
+			let seq  = $(temp).index()+1;
+			let line = $(temp).val(); // 얘는 클로저가 된다.
+			$.ajax({
+				type : 'POST',
+				url : '/ajax/ex12data.do',
+				data : {
+					seq : $(temp).index() + 1,
+					line: line
+				},
+				error : (a, b, c) => console.log(a, b, c)
+			});
+			
+			// 안내 메세지
+			$('#message').css('display', 'flex');
+      
+			setTimeout(function() {
+				$('#message').css('display', 'none');
+			}, 500);
+			
+		}, 5000); // 5초 후 임시저장
+	});
+
+  // 글을 입력하고 해당 대상에 포커스를 잃으면 자동저장된다.
+  // blur() : 대상이 포커스를 잃었을 때 이벤트를 처리하는 이벤트 핸들러 
+	$('.line').blur(function(){
+let seq = $(this).index()+1;
+		let line = $(this).val(); // 얘는 클로저가 된다.
+		$.ajax({
+			type : 'POST',
+			url : '/ajax/ex12data.do',
+			data : {
+				seq : $(event.target).index() + 1,
+				line: line
+			},
+			error : (a, b, c) => console.log(a, b, c)
+		});
+  });
+```
+## ex13
+* 서버처리, 뷰단에 내용도 동기화 처리
+* 글 + 파일첨부 
+* 수정, 삭제 버튼
+  * 수정을 누르면 확인, 취소버튼이 뜬다.
+  * 확인 취소 버튼은 display:none인데 수정을 누르는 순간 나타난다.
+* const formData = new FormData(document.getElementById('form1')) 
+* 1. 통으로 넘기기
+* 2. 아래 옵션 지키기
+  * processData: false
+  * contentType: false
+  * enctype: 'multipart/form-data'
+* 3. 서블릿단에서 MultipartRequest 사용하기
+``` js
+// 상품을 등록, 그리고 방금 등록한 상품을 result로 쏴준다. 
+$('#btn').click( ()=>{
+		// 일반 텍스트 + 첨부 파일 > Ajax 통해서 전송  
+		const formData = new FormData(document.getElementById('form1'));
+		$.ajax({ // 새로고침없이 파일첨부
+			type: 'POST',
+			url: '/ajax/ex13add.do',
+			enctype: 'multipart/form-data',
+			processData: false,
+			contentType: false,
+			data : formData, // 이러면 form이 담긴 데이터를 전송한다.// ★ toLocaleString은 parseInt로 바꾸고 해야한다. 
+			dataType:'json',
+			success : (result)=> {
+				if(result.result == 1) {
+					// 여기서 아래 ${} 이건 변수에 대한 값을 받으려고 쓴것이다. el아니다.
+          // 저렇게 tr 구조를 만드는데 함수에는 seq값 자체의 정적값이 들어가있다. 그럼 클릭시 그 정적값으로 동작되는 것 
+					let tr = `
+						<tr>
+							<td><img src="/ajax/pic/\${result.pic}"></td>
+							<td>\${$('#name').val()}</td>
+							<td>\${parseInt($('#price').val()).toLocaleString()}원</td>
+							<td>\${$('#color').val()}</td>
+							<td>
+								 <div>
+			                        <input type="button" value="수정" onclick="edit();">
+			                        <input type="button" value="삭제" onclick="del(\${result.seq});">
+			                     </div>
+			                     <div style="display:none;">
+			                        <input type="button" value="확인" onclick="editok(\${result.seq});">
+			                        <input type="button" value="취소" onclick="cancel();">
+			                     </div>
+							</td>
+						</tr>
+					`;
+					$('#list tbody').prepend(tr);
+					$('#name').val('');
+					$('#price').val('');
+					$('#color').val('검정색');
+				} else {
+					alert('failed');
+				}
+			}, error: (a, b, c) => console.log(a, b, c)
+		});
+    
+```
+## ex14
+* 버튼을 누르면 게시판 글을 추가로 더 가져오는 예제 
+* n값을 서버에 전달하면 서버는 n으로 시작글, 끝글을 추려서 특정개수의 글을 전달함
+* ex) 10 전달시 서버는 10~19
+* map으로 전달, map.put("begin", n); map.put("end", n+9);
+* String sql = "select * from (select a.*, rownum as rnum from tblProductCopy a) where rnum between ? and ?";
+* Mysql에선 limit, Oracle에선 rownum
+* https://github.com/ngotic/OracleSql/blob/f859e2545b0bb22badfaadfe523b232db46247a6/ex23_pseudo.sql#L7 참고할 것
+<img src="./imgs/차이구분.png">
+* 이개념을 쓰면 스크롤내리면 자동으로 ajax 호출
+* window.innerHeight > 브라우저에서 실제로 표시되는 영역 높이, 사용자가 보는 영역 높이
+* window.scrollY > 스크롤이 세로로 얼마나 이동했는지 나타냄
+* document.body.offsetHeight는 요소의 실제 높이다. 
+// 실제높이 = 보이는 영역 + 가려진 영역이다.
+``` js
+	$(window).scroll(()=>{
+		if( window.innerHeight + window.scrollY >= document.body.offsetHeight ){
+        // ajax호출로 글 더가져옴 내용 append()
+        // 가져온게 빈배열이면 더이상 게시물없다고 alert 
+      }
+  });
+```
+
+## 18. kakao Map + DB연동
+* 랜드마크는 Map에 위치찍고 디비에 직접 넣어줌 
+* 랜드마크부분 디비에 저장하고 그걸 가지고 map으로 이동하는 인터페이스
+* PlaceDTO
+  * 어떤 장소마다 카테고리가 부여된다.
+* CategoryDTO
+  * 카테고리에 대한 정보를 기록해놓는 테이블
+* CategoryDTO에는 숫자 저장
+* java단에서 숫자에 맞는 google icon pcdata 내용으로 치환
+* data- 태그 사용
+``` js
+<td style="display:flex; cursor:pointer;" data-lat="${dto.lat}" data-lng="${dto.lng}" data-category="${dto.cseq}" class="item">
+					<span class="material-symbols-outlined">${dto.cicon}</span>
+					<div style="margin-top: 3px;">${dto.name}</div>
+</td>
+
+// 스크립트단에선 이렇게 참조 현재 클릭한 this를 $()에 너고 data('lat') 이런식으로 불러온다. $(this).data('category') 이렇게 카테고리도 불러오면 된다. 
+let p = new kakao.maps.LatLng($(this).data('lat'), $(this).data('lng'));
+```
+
+## 19. ToyProject
+* favicon 등록하기
+  * 이거 없다고 브라우저에서 메세지 뜨는 경우가 많다.
+  * https://www.flaticon.com/kr/free-icons/favicon 사이트에서 대충 하나 가지고 온다. 다운로드 하나 받아서 적절한 위치에 저장
+  * \<link rel="shortcut icon" href="/toy/asset/favicon.ico"> 이렇게 참조하면 됨
+  * 그러면 탭쪽에 이 마크가 뜨는 것을 확인할 수 있다. 
+* 프로젝트 
+  * 주제선정
+  * 요구분석
+    * 누가 사용하는지 사용자마다 기능 구분 > 메인업무 산정
+    * 기타 추가적인 것 고려 ...
+  * ★ 페이지 관계도
+    * 기능별로 구성
+    * draw.io 사용
+  * 화면 설계
+  * 스토리 보드 
+  * 데이터베이스
+    * ERD
+  * 스크립트 작업
+    * DDL, DML
+  * 기초 데이터 / 더미 데이터
+    * DML
+  * 프로젝트 폴더 구성
+    * webapp>asset>js폴더,css폴더,image폴더,pic폴더 등
+    * webapp>WEB-INF>views>board폴더,inc폴더,user폴더 등 
+      * view 작업시 template하나 만들어놓고 시작하기
+* 기초 작업
+  * 패키지 
+   	* a. com.test.toy    : 메인 패키지
+   	* b. com.test.toy.user : 회원
+   	* c. com.test.toy.user.repository : DB 관련 클래스 파일 50개 ~ 100개
+   	* d. com.test.toy.board  : 게시판
+   	* e. com.test.toy.board.repository : DB
+  * 파일
+   	* a. com.test.toy 
+   		* Index.java    : 시작 페이지 
+   		* Template.java : 템플릿 페이지 
+ 			
+  * b. com.test.user
+    * Register.java : 회원가입
+      * enctype="multipart/form-data", MultipartRequest 사용하고 회원가입시 이미지 첨부 
+      * 사실 검증 작업도 해야함 근데 이건 생략 
+      * 시간을 처음 만들 때 
+   	* Login.java : 로그인
+      * get쪽은 별거 없고, post쪽은 유저가 입력폼에 입력한 id, pw를 서블릿에서 받아서 UserDAO로 DB에 있는 정보와 맞는지 확인, 맞으면 session을 불러와서 setAttribute()로 세션에 id라는 키에 user의 id를 넣는다.
+      * 그리고 그 id에 대한 권한 정보도 같이 넣음
+      * session을 불러올 때는 request 객체에서 불러온다.
+       	* req.getSession().setAttribute("id", id);
+       	* req.getSession().setAttribute("id", lv); 권한 정보도 넣음
+     	* DB에 일치하는 정보가 없다면 
+     	* writer.print("<script>alert('failed.'); history.back();</script>");
+     	* 요렇게 쏴준다. 이게 alert뜨고 다시 history.back();이 뜨긴 뜨는데 이걸로 로그인화면 보여지게 된다. 아마도 form태그로 login.do POST로 이동하고 다시 login.do get으로 이동하는 듯 
+    * Logout.java : 로그아웃 > jsp 페이지도 없고 그냥 링크만 
+      *  req.getSession().removeAttribute("id", id);
+      *  req.getSession().removeAttribute("id", lv);
+      *  두개의 부분을 처리하고 어디로 갈 것인가를 정의
+   	* Info.java : 정보 확인
+     	* 나중에
+    * c. com.test.user.repository
+      * UserDAO.java
+      	* String sql = "insert into tblUser (id, pw, name, email, pic, profile, lv) values (?, ?, ?, ?, ? ,? , 1 )"; // 기본회원이면 lv 1로 픽스
+			* UserDTO.java
+		* d. com.test.toy.filter
+			* EncodingFilter.java
+		* e. com.test.toy.board
+			* Board.java : 목록보기, 년월일 시분초를 년월일까지만으로 substring으로 짜름, 그걸 다시 setRegdate()에 넣고 list를 board.jsp로 전달 
+			* Add.java   : 
+			* View.java  : 
+			* Edit.java  :
+			* Del.java   :
+		* f. com.test.toy.board.repository 
+			* BoardDAO.java
+  			- 이게 sysdate로 시간을 넣은 것을 자바단에서 rs.getString("regdate")로 꺼내니까 년월일시분초까지 나온다. 이걸 사용하는 페이지마다 가공해서 쓴다.
+  			- String sql = "select * from vwBoard"; 이렇게 view를 참조한다. 왜냐면 게시판 정보는 시간에 따라서 기능 추가의 우려가 있다. 그런것을 따로 view로 정의해서 참고하면 수정하기가 용이하다.  
+  
+			* BoardDTO.java
+  
+
+``` sql
+-- 시간 계산을 db 단에서 했다. 1은 1일 1시간은 1/24, 30분은 30/24/60
+create or replace view vwBoard
+as
+select seq, subject, id, regdate, readcount, 
+  (select name from tblUser where id = tblBoard.id  ) as name,
+  (sysdate - regdate) as isnew
+from tblBoard order by seq desc;
+```
+
+``` java
+// ★ 글 DTO인데 완전 이게 테이블 단위로 일치하는 것은 아니다. 부가적인 정보를 또 추가적으로 멤버변수로 넣을 수 있는 법이다. isnew나, 글작성자 같은 정보(User테이블에서 가져옴 혹은 지금 로그인한 유저정보로 해결)
+@Data
+public class BoardDTO {
+	private String seq;
+	private String subject;
+	private String content;
+	private String id;
+	private String regdate; // 시간을 string으로 정의했는데 이렇게해서 자바단에 처리함
+	private String readcount;
+
+	// ------------ DB에 없는 필드도 DTO에 담을 수 있다.
+	private String name;  // 작성자 이름 
+	private double isnew; // 최신글인지 확인
+  // 스프링에선 이런 필드가 있다면 바인딩이 안되려나? .... 고민해볼것 
+}
+```
+  * 뷰
+    * a. views 
+  		* index.jsp : 메인 페이지
+  		* template.jsp 템플릿 페이지 
+			 
+  	* b. views > inc : 조각 페이지 
+  		* asset.jsp  // include나 cdn이런거 여기다가 몰아넣는다.
+  		* header.jsp // 로그인 여부, 유저 상태표시
+		* c. views > user
+			* register.jsp
+			* login.jsp
+			* info.jsp
+		* d. views > board
+			* board.jsp
+			* add.jsp
+			* edit.jsp
+			* view.jsp
+			* del.jsp
+
+
+``` js
+// 로그인 했는지? 로그인을 했다면 lv가 몇인지에 따라서 
+// 보여주는 유저 상태를 다르게 한다. id가 session에 있고 el로 확인한다.
+// 또한 로그인 여부에 따란 nav 구성을 다르게도 보여준다. 
+	<h1>
+		<c:if test="${empty id}">
+			<span>Toy</span>
+		</c:if>
+		
+		<c:if test="${not empty id}">
+			<span class="material-symbols-outlined">toys</span>
+		</c:if>
+			
+		<c:if test="${not empty id and lv == 1}">
+			<span style="color: cornflowerblue;">Toy</span>
+		</c:if>
+		<c:if test="${not empty id and lv == 3}">
+			<span style="color: tomato;">Toy</span>
+		</c:if> 
+		Project
+	</h1>
+
+  <nav>
+		<a href="/toy/index.do">Home</a>
+		
+		<c:if test="${empty id}">
+		<a href="/toy/user/register.do">Register</a>
+		<a href="/toy/user/login.do">Login</a>
+		</c:if>
+		
+		<c:if test="${not empty id}">
+		<a href="/toy/user/unregister.do">Unregister</a>
+		<a href="/toy/user/logout.do">Logout</a>
+		</c:if>
+		<a href="/toy/board/board.do">Board</a>
+	</nav>
+
+ // 이런걸로 조건에 따라서 특정 엘리먼트를 넣을지 안넣을지 판단이 가능하다. 
+ // css를 상단위 정의하고 
+  <c:if test="${dto.isnew < 30/ 24 / 60}"> 
+    <span class="isnew">new</span>
+  </c:if>
+``` 
+## 로그인 테스트
+* 아래처럼 로그인 폼이 있고 로그인 id, pw값을 담은 hidden input 태그를 만들어놓고 버튼만 클릭하면 로그인되게 해놓음 > 직접 입력하지 않아도 됨 
+``` html
+<form method="POST" action="/toy/user/login.do">
+		<table class="vertical" id="login">
+			<tr>
+				<th>아이디</th>
+				<td><input type="text" name="id" id="id" required class="short"></td>
+			</tr>
+			<tr>
+				<th>암호</th>
+				<td><input type="password" name="pw" id="pw" required class="short"></td>
+			</tr>
+		</table>
+		<div>
+			<button type="submit" class="back" onclick="location.href='/toy/index.do';">돌아가기</button>
+			<button type="submit" class="login primary">로그인</button>
+		</div>
+		</form>
+		
+		<div style="display:flex;">
+			<!-- 버튼하나 눌러버리면 hidden 태그에 담긴 것이 서버로 넘어가서 로그인이 된다.  -->
+			<form method="POST" action="/toy/user/login.do">
+				<input type="hidden" name="id" value="hong">
+				<input type="hidden" name="pw" value="1111">
+				<input type="submit" value="hong">
+			</form>
+			
+			<form method="POST" action="/toy/user/login.do">
+				<input type="hidden" name="id" value="Kim">
+				<input type="hidden" name="pw" value="0000">
+				<input type="submit" value="Kim">
+			</form>
+			
+			<form method="POST" action="/toy/user/login.do">
+				<input type="hidden" name="id" value="하나둘">
+				<input type="hidden" name="pw" value="123">
+				<input type="submit" value="하나둘">
+			</form>
+			
+			<form method="POST" action="/toy/user/login.do">
+				<input type="hidden" name="id" value="admin">
+				<input type="hidden" name="pw" value="1111">
+				<input type="submit" value="관리자">
+			</form>
+		</div>
+```
+
+## 필터 설정
+* 필터는 서버와 서블릿 사이에 있다. 
+* 여러개의 필터가 체인처럼 호출될 수 있다.
+* 필터가 한개인 경우 chain.doFilter을 호출시 서블릿으로 간다. 
+* 그러니까 서블릿 호출전에 doFilter로 필터동작이 한번된다. request, reponse가 이곳에서 미리 처리가 될 수 있다. 미리 이곳에서 인코딩 설정이 가능하다. 
+* 이러한 세팅 코드를 여기서 미리 정하면 서블릿단의 컨트롤러 코드가 간결해진다. 
+``` java
+// 프로젝트 때 필터처리부터 셋팅하고 작업하자 
+// import javax.servlet.Filter를 구현하는 EncodingFilter를 정의한다. 
+public class EncodingFilter implements Filter{
+	
+	private String encoding;
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		System.out.println("필터 생성");
+		this.encoding = filterConfig.getInitParameter("encoding");
+		if(this.encoding == null || this.encoding.equals("")) {
+			this.encoding = "UTF-8";
+		}
+	}
+	
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		System.out.println("필터 동작");
+		// 인코딩 처리 
+		request.setCharacterEncoding(this.encoding); 
+		// 그 다음 필터 및 서블릿 호출 
+		response.setCharacterEncoding(this.encoding);
+		chain.doFilter(request, response);
+	}
+	
+	@Override
+	public void destroy() {
+		System.out.println("필터 소멸");
+	}
+}
+
+//필더 등록은 web.xml에서 한다. init-param으로 필터에 대한 변수를 xml에서 설정가능
+///-- 어떤 요청 + 필터 등록 -->
+  <filter>
+  	<filter-name>encoding</filter-name>
+  	<filter-class>com.test.toy.filter.EncodingFilter</filter-class>
+  	<init-param>
+  		<param-name>encoding</param-name>
+  		<param-value>UTF-8</param-value>
+  	</init-param>
+  </filter>
+  
+  <filter-mapping>
+  	<filter-name>encoding</filter-name>
+  	<url-pattern>*.do</url-pattern>
+  </filter-mapping>
+```
+
+### template.jsp 구성
+* \<%@ include ~ %>는 치환의 느낌이다. 
+``` js
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<%@ include file="/WEB-INF/views/inc/asset.jsp" %>
+
+<style>
+
+</style>
+</head>
+<body>
+	<!-- template.jsp -->
+	<%@ include file="/WEB-INF/views/inc/header.jsp" %>
+	<main id="main">
+		<h1>콘텐츠 제목 <small>부제</small></h1>
+		콘텐츠 내용
+	
+	</main>
+
+<script>
+
+</script>
+</body>
+</html>
+```
 
 ## 잡다한 팁
 
@@ -1052,7 +1864,20 @@ ajax.send('txt2='+$('#txt2').val());
     * 브라우저 단에서 url을 잘못 입력해서 맞는 url 매핑이 없는 경우
     * 브라우저에서 매핑이 안된 url 쐈으니 그렇다. 
   * ★ 동일 에러번호가 떴다고해서 같은 이유로 나는 에러가 아니다.
-  * jsp에서 ` `안에 $를 넣을 때 template String 안에 escape시키기
+  * jsp에서 \` \`안에 $를 넣을 때 template String 안에 escape시키기
+  * 변수를 안에다 채우겠다라는 의미임 \<td> 나 \<div> 태그 안에 텍스트 넣는 경우 이렇게 함 
+    * ex) <div>\${$(item).find('seq').text()}</div>
+      * 여기선 가장 바깥 $에 escape를 시킨다. 안쪽의 $는 jquery다. 
+      * 아래의 코드에서 차이를 파악하기 
+```js
+let name= '홍길동';
+console.log(`name : ${name}`);  // EL로 인식해서 EL을 사용할 때 이방식을 사용 
+console.log(`name : \${name}`); // 위의 변수로 인식, 변수를 채울 때 이 방식을 사용
+// jsp의 template string에서는 구별하자 
+```
+
+
+
 ``` js
 	$('#btnadd').click(()=>{ 
     // html은 상관없는데 jsp에서는 script단 template String에서 !! $를 ★ el로 알아먹으니까 $ 앞에 \ 붙인다.
@@ -1081,15 +1906,50 @@ ajax.send('txt2='+$('#txt2').val());
     * String sql = "select '['||zip||'] '|| sido ||' '|| gugun ||' '|| dong||' '||bunji as address from zipcode where dong LIKE '%'||?||'%'";
     * 중요한 것은 ? 부분인데 이걸 '' 씌워버리면 ?가 아니라 물음표 문자열로 인식해버린다. 
     * 그래서 '%' 부분을 ||(문자열 붙이기) 연산자를 사용해서 '%'|| ? ||'%' 이렇게 처리하자. 
-    * \<span onclick = "location.href='/memo/edit.do?seq=${dto.seq}';">[e]</span> 여기부분에서 " "안에 ~ location.href 있고 이건 속성이니까 값쓰러면 ' '안에 넣고 하면 된다. ', " 의 경계를 조심하자. 
-    * input type="submit" 이어야 클릭했을 때 form태그가 동작한다. type="button"은 클릭시 form동작 안한다. 
-    * 메서드명이랑 사용하는 클래스명이 겹치는 경우에 java.util.List 요렇게 들고온다. 
-    * insert into tblMemo values (seqMemo.nextVal, '메모입니다.', default, 1); // default 적극 이용
-    * /<c:forEach var = "i" begin="0" end="3">
-			<div style="width: ${ dto.cnt[i] * 30 }px;">${dto.item[i]}(${dto.cnt[i]})</div>
-		</c:forEach> 
-    * var이라고 잡은거 el에는 el안에는 그냥 드간다. 배열을 따로 items라고 지정하지 않아도 for문을 구성한다. 
-    * \<c:if test="${result == 1}"> 이런식의 사용은 중요
-    * \<select id="address1">\<option value="0">검색해주세요\</option>\</select> 옵션은 value가 아니라 PCDATE를 채운다.
-    * \<body oncontextmenu="return false;"> 우클릭 창 방지 : 이거 기억하기 
-    * DOM을 $(DOM) 이렇게 처리가능하다. 이벤트 함수에서 $(this)
+  * \<span onclick = "location.href='/memo/edit.do?seq=${dto.seq}';">[e]</span> 여기부분에서 " "안에 ~ location.href 있고 이건 속성이니까 값쓰러면 ' '안에 넣고 하면 된다. ', " 의 경계를 조심하자. 
+  * input type="submit" 이어야 클릭했을 때 form태그가 동작한다. type="button"은 클릭시 form동작 안한다. 
+  * 메서드명이랑 사용하는 클래스명이 겹치는 경우에 java.util.List 요렇게 들고온다. 
+  * insert into tblMemo values (seqMemo.nextVal, '메모입니다.', default, 1); // default 적극 이용
+  * /<c:forEach var = "i" begin="0" end="3">
+	<div style="width: ${ dto.cnt[i] * 30 }px;">${dto.item[i]}(${dto.cnt[i]})</div>
+</c:forEach> 
+  * var이라고 잡은거 el에는 el안에는 그냥 드간다. 배열을 따로 items라고 지정하지 않아도 for문을 구성한다. 
+  * \<c:if test="${result == 1}"> 이런식의 사용은 중요
+  * \<select id="address1">\<option value="0">검색해주세요\</option>\</select> 옵션은 value가 아니라 PCDATE를 채운다.
+  * \<body oncontextmenu="return false;"> 우클릭 창 방지 : 이거 기억하기 
+  * DOM을 $(DOM) 이렇게 처리가능하다. 이벤트 함수에서 $(this)
+  * jquery에는 $('#btn').click(); 라는 에뮬레이터 함수가 있음 바로 실행함, focus()라는 제키쿼리 함수가 있어서 예를 들면 회원가입 탭에서 어떤값을 입력하면 다음 인풋요소에 focus()를 걸어서 입력이 용이하게 만든다. 
+  * 자바스크립트에서 퍼센트 인코딩, 디코딩 encodeURI, decodeURI
+  ``` js
+// ★ 퍼센트 인&디코딩
+// 자바스크립트는 다음과 같다.
+var uri = "https://www.myHome.net?name=홍길동"
+var encode1 = encodeURI(uri);
+var decode1 = decodeURI(uri);
+
+// 자바는 다음과 같다. 
+URLEncoder.encode(Data, "UTF-8");
+URLDecoder.decode(encodeData, "UTF-8");
+  ```
+  * 스크립트 단에서도 \<c:forEach></c:forEach> 같은 jstl을 많이 씀(근데 인텔리센스가 .. 안뜸) 서블릿단에서 전송해준 값을 여기서 사용하는 경우는 처음에 문서열리고 데이터 로드하는 경우이다.
+  * $(this).css('background-color', 'transparent'); transparent를 쓰면 하얀색으로 색을 지정하겠다는 뜻이다.
+  * $(this).css('background-color')를 읽으면 rgb값 문자열이 나온다. 'rgb(255, 215, 0)'이런식으로 나온다.
+  * jquery의 blur(function(){}); : 대상 엘리먼트가 포커스를 잃었을 때 이벤트를 처리하는 이벤트 핸들러
+  * toLocaleString은 자바스크립트에서 원 단위를 표시하기 위해 쓴다.
+    * int형일 때 동작하는 함수므로 string을 parseInt로 변환 후 사용할 것
+  * jquery의 eq는 .children().eq(1) 이런식으로 children 이후 쓴다.  
+  * $('#list td').eq(${status.index}) 이렇게 한방에 여러개 찾으면 바로 eq써도 된다. 
+  * https://www.flaticon.com/kr/free-icons/favicon 파비콘이비지 무료 다운 사이트
+  * drag 관련 기능은 jquery-ui에서 제공해준다. $(item).draggable({}); 안에 옵션을 넣을 수가 있는데 옵션 사용법을 알고 하는게 나음
+  ``` js
+  // 사용법은 홈페이지 혹은 구글링에서 유심히 봐야함
+  $(item).draggable({
+			cursor:'move',	
+			drag:function(event,ui){ // 드래그 중일 때 이벤트 발동
+				console.log("드래그 중입니다.");
+	        },
+	    stop:function(event,ui){ //멈췄을 때 이벤트 발동
+
+      });
+  });
+  ```
