@@ -1,6 +1,6 @@
 # ServerBasic
 ## 복습용 README.md
-> 리드미 한 페이지로 수업내용요약 및 복습, 정리 + 개인적인 공부로 추가적인 내용도 붙을 수 있음
+> 리드미 한 페이지로 수업내용요약 및 복습, 정리 + 개인적인 공부로 추가적인 내용도 붙을 수 있음 > 이해를 기반한 내용임
 
 ## 1. 서블렛(Servlet)
 - 웹서버측에서 자바를 사용한 프로그램을 동작시키는 기술(환경)이다. 
@@ -1450,6 +1450,8 @@ let seq = $(this).index()+1;
 * 수정, 삭제 버튼
   * 수정을 누르면 확인, 취소버튼이 뜬다.
   * 확인 취소 버튼은 display:none인데 수정을 누르는 순간 나타난다.
+  * div로 버튼 두개 묶음 그걸 수정 누르면 확인, 취소가 뜨도록하고
+  * 확인 누르면 다시 div로 묶은 수정, 삭제 버튼이 복구 
 * const formData = new FormData(document.getElementById('form1')) 
 * 1. 통으로 넘기기
 * 2. 아래 옵션 지키기
@@ -1898,6 +1900,7 @@ public class EncodingFilter implements Filter{
 * 예를 들어서 delete, edit, add 부분
 * 필터단에서는 회원 & 비회원을 구분한다.
 * 하지만 이친구가 현재 접속한 세션의 id, 글 주인과 같지 않다면 불법적인 요청이라 막아야 한다. 그럴 경우 아래의 로직을 넣는다. 
+* 스프링은 security로 애너테이션 하나만 달아주면 되는데... 
 ``` java
 
 // 이부분을 필요한 로직에 추가 
@@ -1930,7 +1933,6 @@ public class Auth {
  * 페이지를 만드는 업무가 중복되는 것이다. 
  * RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/board/del.jsp"); dispatcher.forward(req, resp); ★ 이런 코드를 writer와 같이 쓰지 말 것 
 
-
 ### 조회수 기능
 * 1. 읽기만 하면 무지성 증가... > 이것은 의도적으로 F5 연타로 조회수 조작하는 경우가 있음
 * 2. 하루에 1증가만 허용(계정을 구분)
@@ -1942,16 +1944,13 @@ public class Auth {
   * board페이지에선 n인데 view페이지로가면 y로 변한다. 
   * 그러면 새로고침시에 read가 y니까 조회수가 올라가지 않게 한다. 
   
-
 ### 뒤로가기 같은 것을 구현시 history.back()과 location.href의 차이 
 * location.href은 무조건 새로운 페이지를 얻어온다. 그래서 만약에 내가 어떤 페이지에 잠시 이동해 있는 순간에 데이터의 변경이 되고 내가 다시 변경된 페이지로 돌아온경우 페이지를 새로 받아오기 때문에 데이터는 최신화 되어있다.
 * history.back()도 많이 쓰긴 한다. 캐시에다가 저장해놓은 페이지로 다시 이동한다. 타임머신을 타고 다시 과거로 가는 기분이다. 사실상 서버가 실제로 응답하는 것이 아니다. 
 * 무엇을 사용하느냐는 업무마다 다르다. 하지만 새로운 페이지를 얻어오는 것은 그만큼 요청을 한다는 말이고 캐시를 쓴다는 것은 그만큼 서버의 요청을 세이브 한다는 말.
 * 공지사항과 같은 새로운 글이 올라오는 주기가 적은 경우엔 history.back()을 쓴다. 
 
-
-
-###  스크립트 글 처리 
+### 스크립트 글 처리 
 * 브라우저는 html 코드 형식으로 글을 읽어서 우리에게 보여준다.
 * 게시판 기능 구현시 글을 입력하는 부분에서 사용자가 스크립트를 의도적으로 넣었을 때 우리가 아무런 처리를 안하면 문제가 된다.
 * 또한 글 자체를 입력받아버려서 엔터를 치는 경우 그것을 <br> 태그로 안보여주면 우리는 개행문자를 의식하지 못한다. -> 의도적 <br> 태그 삽입 필요 
@@ -1965,36 +1964,175 @@ content.replace("<", "&lt;").replace(">", "&gt;").replace("\r\n", "<br>");
 1. 먼저 >,< 를 escape 시키고
 2. 개행문자를 <br>로 만든다.
 근데 이게 자바단에서 처리하는 방법이고 문제는 값을 기입하고 display 해주는 곳이 있다면 어디든지 이것을 막아야 하므로 
-
 ★ <c:out value=""/> 사용을 자주 하는 것도 좋다. 
-
 ```
+## 게시물이 아예 없음 처리 
+* \c:if test="${list.size()==0}"> 이런 경우 게시물이 없다고 써주기 
 
-
-
-
-
-### 페이징 처리 
-
-
+### 검색기능
+* 제목이나 내용을 대상으로 내가 찾는 단어가 있는지 검색한다.
+* SQL에서 where 검색이다. 추가적인 처리로는 현재 글이 검색되어 나온 글인지 아닌지를 알려주는 정보를 넣는다. > 'search'
+* DTO로 만들어도 되지만 여러 정보를 Map에다가 넣어서 보내주자 
+* column : 글, 제목 중 어떤것에서 찾니? 
+* word : 유저가 입력한 검색하려는 단어가 뭐니? 
+* search : 이게 있으면 좋은 이유 '검색한 단어'로 검색한 결과가 몇건 나왔다는 출력구문을 띄워주기 위한 용도로 사용된다.
+* column과 word 
+  * search = 'n' or search = 'y' 라는 값이 들어있다.
+  * search가 y이면 board쪽에는 select와 검색 input 태그에 값을 채워넣는다.
+* 글을 조회시 List<BoardDTO> list = dao.list(map); 이렇게 부가 정보로 들어간다. 
+* '${map.word}'(으)로 검색한 결과 ${totalCount}건이 있습니다. 이걸 board.jsp에 넣어서 검색을하면 board에서 board로 가는데 현재 검색한 상태라는 것을 알려준다. 
+* 추가적 처리...
+  * content = content.replace(word, "<span style=\"background-color:yellow;color:red;\">"+word+"</span>");
+  * 내가 찾은 단어에 대하여 색깔을 칠해주는데 단어가 inline이라 형광펜 칠해진거 처럼 보여서 두드라짐 
+  
 
 ### 댓글기능
 * 댓글은 부모 글번호를 가지고 있다.
 * 글이나 게시판 모두 id정보를 가지고 있는데 이것은 회원 테이블의 key이다. 테이블들 사이에서 중복되는 칼럼인데 사실이게 PK, FK 관계이다. 
-<img src="./imgs/회댓글.PNG">
+<img src="./imgs/회댓글.PNG" width=70%>
 
 ### 글삭제 기능 구현시...
 * 글 > 댓글은 DB에서 부모 자식의 테이블 구조이다. 
-* 
+* 글을 지우면 댓글까지 지울래? 아니면 댓글이 있으면 글을 못지우게 할래? 선택한다. 
+
+## ★★★★★ 페이징 아이디어 
+* 그림을 그릴 줄 알고 계산을 해야함 > 변수만 대충 뽑아내면 윤곽이 잡힙 
+<img src="./imgs/page_idea.PNG" width=80%>
+* ★ 많은 글을 어떻게 처리할 것인가에 대한 idea
+* <b>필요한 변수 </b>
+* <b>totalCount</b> : 몇개의 글이 있냐? 
+* <b>blockSize</b> : 한 페이지당 몇개글 보여줄거냐?
+* <b>totalPage</b> : 전체 몇 페이지가 있나? 
+  * Math.ceil(totalCount/blockSize) > 나누고 ceiling or 나눈거
+    * 95글이 있으면 10페이지 나누고 ceiling
+    * 10글          1페이지 
+    * 4글이 있으면   1페이지 
+    * 15글이 있으면  2페이지, 35글 4페이지
+    * 254글이 있으면 26페이지   
+* <b>pageSize</b> : 한 화면에 몇 페이지 목록까지 보여줄 것이냐? 
+* 페이지 목록을 위한 <b>beginPage</b>, <b>endPage</b>
+  * 1, 10
+  * 11,20
+  * 21,30
+  * beginPage은 pageSize(n-1)+1
+  * endPage는 pageSize * n
+    * endPage는 totalPage가 될 수도 있다. 
+* 현재 보고 있는 페이지 <b>nowPage</b>
+* 글을 가져오기 위한 쿼리용 변수 <b>begin</b>, <b>end</b>
+  * rownum, limit에 사용됨
+  * <b>현재 페이지</b> 정보가 필요 
+  * 글은 내림차순 정렬이다. 글번호가 작은게 뒤에 페이지가 있다. desc 정렬
+  * 정렬이 되었다는 보장이 있으므로 중간에 짜르기가 된다. 
+  * MySQL : LIMIT > Limit 10, 10(blockSize) : 10개를 건너띄고 10개 출력 > 11 부터 blockSize 만큼 출력 
+  * Oracle : 
+    * select * from (select a.*, rownum as rnum from vwBoard a) where rnum between 'begin숫자' and 'end숫자' > between은 양쪽 값 포함
+  * JPA는 따로 제공
+  * begin은 (nowPage-1)*blockSize+1
+  * end는 begin+blockSize-1  
+  * end와 begin의 차이가 9정도이다. 근데 이게 글이 더적어도 쿼리상엔 문제가 없음 
+* 페이지 넘버 리스트에서 글이 더 있냐의 화살표 <b>prev</b>, <b>next</b>
+  * prev가 현재 beginPage가 1일 떄는 링크를 막는다.
+    * 현재 beginPage가 1이 아닐 때 10이나 20일 때는 당연히 현재 beginPage-1로 이동
+  * next
+    * 이전에 구한 endPage가 totalPage보다 작으면 next는 endPage+1이다. 
+    * 반대로 totalPage보다 크면 링크를 막는다. 
+* 짜야할 쿼리
+  * 토탈카운트
+  * 현재 페이지글 들고오는 쿼리
+  
+## <b>pagination</b> 만들기 > i다..
+* 자바단에서 만들던가, js단에서 만드는 방법이 있는데.
+* 여기 코드에선 안 쓴 이유가 괜히 썼다가 js로 쿼리스트링을 더 넘겨줘야 하는거 아닌가의 문제인가 싶다....
+* 나는 웬만하면 js단에서 만드는 것이 좋지 않나 싶다. 
+* 어느 단에서 만들어도 물론 문제될건없다.
+
+## 검색 + 페이징 쿼리 
+* 조건 검색을 한 대상에서 페이징을 처리한다. 
+``` java
+// search가 y일 때 이 쿼리가 발동이 된다. 그러면 search가 n이면 %s를 공백으로 채워 일반쿼리가 나온다. 
+String where = "";
+
+if (map.get("search").equals("y")) {
+where = String.format("where %s like '%%%s%%'"
+					, map.get("column")
+					, map.get("word"));
+}
+
+// rnum자체를 끝에다가 쓰려고 엘리아스를 씀 rownum은 미리 만들어져서 안쪽 쿼리 where 조건으로는 못 쓴다.
+String sql = String.format("select * from (select a.*, rownum as rnum from vwBoard a %s) where rnum between %s and %s "
+					, where
+					, map.get("begin")
+					, map.get("end")
+);
+```								  
+
+## 글 답변기능
+* view파일이 add와 동일, add를 재활용해서 쓴다.
+* 그럴려면 이것이 새글쓰기인지, 답변인지 구분하는 변수 필요
+* 이전 페이지 단에서 new를 보내줄지, 아니면 reply를 보내줄지 구분만 하면 된다. 
 
 
-# ★★★★★ 페이징 아이디어 
-* 
+## 글 답변 기능이 있을 때 삭제
+* 글 답변이 있는 경우 글 삭제
+* 답글까지 모조리 삭제
+* 해 당글만 삭제 > 글 정렬 순서가 흐트러짐 '좋지 않음' 
+* '삭제된 글입니다'로 표시
+
+## 글 답변 알고리즘
+* board table에 depth, thread를 추가 
+* 댓글이든, 글이든 depth라는 개념이 있다. thread라는 용어를 쓰는데 이름만 thread이니까 별 신경쓰지는 말자 
+``` text
+// depth는 쉬운데 thread가 어려움 
+a. 새글 쓰기
+	------------------- getMaxThread() 호출 --------------------------
+	1. 현존하는 모든 게시물 중에서 가장 큰 thread값을 찾아서, 그 값에 +1000을 한 값을 새글의 thread값으로 넣는다.
+	"select nvl(max(thread), 0 ) as thread from tblBoard";
+	이 때 nvl이 사용된다. 
+	2. 새글의 depth는 항상 0을 넣는다. 
+b. 답변글 쓰기
+	// -------------- 이전 thread update login ------------------------
+	1. 현존하는 모든 게시물의 thread값을 대상으로, 현재 작성 중인 답변글의 부모글 thread값보다 작고 이전 새글의 thread값보다 큰 thread를 모두 찾아서 -1을 한다. 
+	prevThread, parentThread
+	// -------------- 새로 등록하는 dto --------------------------------
+	2. 답변글의 thread값을 부모글 thread의 -1을 넣는다.
+	3. 답변글의 depth값을 부모글 depth의 +1을 넣는다. 
+* 답글은 구글 아이콘 들고와서 표시,
+* depth에 따라서 style의 margin-left를 ${dto.depth*20} 처리한다.
+
+```
+
+## 글 쓴 회수, 댓글 쓴 횟수
+* count(*)를 comment, board table에 각각 구해서 map으로 쏴줌 
+
+
 
 ## ★ 항상 어떤 데이터가 이전 단에서 전송되는지 확인하기
+## ★ 글 목록 > 글 조회 > 글 검색 > 댓글 입력 > 글 목록 등 이런 과정에서 생기는 과정에서 queryString으로 인한 에러가 있을 수 있다.
+* nullPointerException 등이 주로 생길 수 있다. 
+* "" 빈 문자열 전송으로 인한 문제가 일어날 수 있다.
+* null처리 > .메서드는 nullPointerException 유발 가능
+* 참조 객체 반환 처리는 null보다는 빈 list를 반환
+  * for문 돌 때 null 인 list 변수는 에러를 일으키니까 빈 list를 건내주기 
+  
+## 뒤로 가기를 항상 고려를 하고 구현을 하자
+* board에서 검색조건을 쿼리로 view 페이지에 넘겨줌
+* board > view 
+  * column=&word=&search=n 
+* view > board 
+  * 받은 column=&word=&search=n 를 hidden 태그에 담아서 board로 넘겨준다.
+
+
+##  result를 transaction 처리를 하면 좋은데 그렇지 못한 상황
+* result를 곱해볼까...?
+``` java 
+result *= dao.delComment(seq); 
+result = dao.del(seq); 
+```
+
+## 웹은 상태유지가 안됨... 유명블로그, 게시글 같은 경우에 QueryString을 담아서 북마크로 페이지를 관리하는 경우가 많은데 검색할 때 post전송으로 보내면 QueryString이 없어짐.. 반면 GET같은 경우는 QueryString라도 상태유지 용도로 사용할 수 있다. 
+
 
 ## 잡다한 팁
-
 * 스크립틀릿 주석은 살짝 다르다. <%-- <%=  %> --%>
 * F12 -> 새로고침 우클릭 > 일반새로고침, 강력새로고침, 캐시 비우기 및 강력 새로고침 등
 * 강력 새로고침을 하는 경우는 가끔씩 뷰 파일이 외부리소스를 가져오지 못하고 뻗는 경우가 있는데 그럴 때 강력 새로고침을 한다.
@@ -2019,8 +2157,6 @@ console.log(`name : ${name}`);  // EL로 인식해서 EL을 사용할 때 이방
 console.log(`name : \${name}`); // 위의 변수로 인식, 변수를 채울 때 이 방식을 사용
 // jsp의 template string에서는 구별하자 
 ```
-
-
 
 ``` js
 	$('#btnadd').click(()=>{ 
@@ -2098,3 +2234,16 @@ URLDecoder.decode(encodeData, "UTF-8");
   });
   ```
   * 쿼리스트링으로 한글을 인코딩하지 않고 넣어주는 경우 다음 동작이 되지 않는 경우가 있다. 보통은 데이터를 객체화해서 뷰단으로 넘겨주는 경우가 많다. 이런 경우에는 한글?을 고려하지 않지만 쿼리스트링에 한글이 들어가는 경우 URLEncoder.encode를 고려해주자.... msg 같은거...
+  * 주석에 EL 넣다가 에러가 나는 경우가 있었다... 조심하기
+  * Servlet URL을 중복시키면 톰켓에서 에러가 난다. 조심하기
+  * String referer = req.getHeader("referer"); 이렇게 호출하면 어떤 URL에서 방문하였는지 우리는 확인이 가능하다. 예를 들어서 티스토리 사이트 유입경로를 표시하는 통계에서는 이것을 활용한다. 
+  * 변수명 네이밍시 조금은 조심해야 한다. 댓글 dto > cdto, 글 dto는 > dto 이런식으로 뭔가 앞글자를 따서 구분이 용이하게끔하자... 
+  * ★ ?page=5 > key, value 없으면 null, 메서드를 아예 호출 x
+  * ★ ?page=5&column=&word= >"" key만 있으면 빈문자열 string함수 처리는 되것네? 
+  * navFlex 처리> 아이콘 위치처리, 배치처리
+  
+ <img src="./imgs/navFlex.PNG" width=60%>
+
+  * $(event.target).closest('tr').remove(); // closest는 가장 가까운 해당 요소를 찾는다.. 
+  * form 태그는 $('#editCommentForm').submit();
+  * 테이블은 display: table-cell; 원래 이값이다.

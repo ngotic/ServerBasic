@@ -1,29 +1,22 @@
 /* main.css */
-
 #header {
 	display:flex;
 	justify-content:space-between;
 	border-bottom: 1px solid #CCC;
 }
-
 #header > h1 {
 	border:0;
 	padding:0;
 	margin: 1rem;
 	font-size : 1rem;
 }
-
 #header > h1 > .material-symbols-outlined {
 	transform: translate(0, 5px);
-	/*
-		★ 아이콘 위치잡기 > translate로 잡아라 
-	*/ 
+	/* ★ 아이콘 위치잡기 > translate로 잡아라 */ 
 }
-
 #header > nav {
 	margin: 1rem;
 }
-
  #header > nav > a {
 	padding-right: 2px;
 	font-size : 14px;

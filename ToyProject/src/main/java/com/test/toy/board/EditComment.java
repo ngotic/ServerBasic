@@ -20,8 +20,6 @@ public class EditComment extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
 		// 권한체크 !!! 
-		
-		
 		//EditComment.java
 		String bseq = req.getParameter("bseq"); // 상태유지 때문에 다른 페이지갔다고 와도 들고 있는다. 그렇다고 세션에 넣지 않는다. 
 		String cseq = req.getParameter("cseq");

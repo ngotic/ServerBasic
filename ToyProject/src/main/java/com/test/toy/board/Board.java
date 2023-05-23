@@ -77,10 +77,6 @@ public class Board extends HttpServlet {
 		begin = ((nowPage - 1) * pageSize) + 1;
 		end = begin + pageSize - 1;
 		
-		
-		
-		
-		
 		// 2가지 용도 호출
 		// 1. 일반 목록보기  > board.do
 		// 2. 검색 결과 보기 > board.do?column=subject&word=test
@@ -109,7 +105,9 @@ public class Board extends HttpServlet {
 		
 		
 		BoardDAO dao = new BoardDAO();
+		
 		List<BoardDTO> list = dao.list(map);
+		
 		System.out.println(map+","+list);
 		
 		for(BoardDTO dto : list) {
@@ -177,13 +175,10 @@ public class Board extends HttpServlet {
 		
 		// board.do?page=1
 		// [] 1 2 3 4 5 6 7 8 9 10 []
-		
 		// board.do?page=5
 		// [] 1 2 3 4 5 6 7 8 9 10 []
-		
 		// board.do?page=10
 		// [] 1 2 3 4 5 6 7 8 9 10 []
-		
 		// board.do?page=11
 		// [] 11 12 13 14 15 16 17 18 19 20 []
 		
@@ -203,7 +198,7 @@ public class Board extends HttpServlet {
 			if( n == nowPage) {
 				sb.append(String.format(" <a href=\"#!\" style='color:tomato;'>%d</a>", n));
 			} else {
-				sb.append(String.format(" <a href=\"/toy/board/board.do?page=%d\">%d</a>", n, n));
+				sb.append(String.format(" <a href='/toy/board/board.do?page=%d'>%d</a>", n, n));
 			}
 			
 			loop++;

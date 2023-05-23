@@ -311,7 +311,7 @@ public class BoardDAO {
 			if(map.get("search").equals("y")) {
 				// 이전
 				// where = String.format("where %s like '%%%s%%'" // 이건 검색이 안되는데 view에서 content를 빼서 그렇다. 
-				where = String.format("and %s like '%%%s%%'" // 이건 검색이 안되는데 view에서 content를 빼서 그렇다.
+				where = String.format("where %s like '%%%s%%'" // 이건 검색이 안되는데 view에서 content를 빼서 그렇다.
 						, map.get("column")
 						, map.get("word"));
 				// 동적으로 column으로 구성할 것이다. if문으로 하기 싫어서 그렇다. 
@@ -339,7 +339,7 @@ public class BoardDAO {
 
 		try {
 
-			String sql = "select nvl(max(thread),0 ) as thread from tblBoard";
+			String sql = "select nvl(max(thread), 0 ) as thread from tblBoard";
 			stat = conn.createStatement();
 			rs = stat.executeQuery(sql);
 

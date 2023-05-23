@@ -96,7 +96,7 @@ public class Add extends HttpServlet {
 			
 
 			// 2. 답변글의 thread값을 부모글의 thread-0을 넣는다.
-			dao.updateThread(map);
+			dao.updateThread(map); // 이전 thread 싹다 처리 
 			thread = parentThread-1;
 			// 3. 답변글의 depth값을 부모글의 depth+1을 넣는다.
 			depth = parentDepth + 1;
@@ -111,7 +111,7 @@ public class Add extends HttpServlet {
 		
 		
 		
-		int result = dao.add(dto);
+		int result = dao.add(dto); // 새로 등록하는 dto 
 		
 		if(result == 1 ) {
 			resp.sendRedirect("/toy/board/board.do");
