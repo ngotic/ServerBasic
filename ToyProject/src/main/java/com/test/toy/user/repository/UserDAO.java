@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.test.my.DBUtil;
 
@@ -67,6 +69,72 @@ public class UserDAO {
 				return result;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	public UserDTO get(String id) {
+		
+		try {
+
+			String sql = "select * from tblUser where id = '"+ id + "'";
+
+			stat = conn.createStatement();
+
+			rs = stat.executeQuery(sql);
+
+			if (rs.next()) {
+
+				UserDTO dto = new UserDTO();
+				dto.setId(rs.getString("id"));
+				dto.setName(rs.getString("name"));
+				dto.setEmail(rs.getString("email"));
+				dto.setLv(rs.getString("lv"));
+				dto.setPic(rs.getString("pic"));
+				dto.setProfile(rs.getString("profile"));
+				
+
+				return dto;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+		
+	}
+
+	// DAO의 메소드 1개 > 딱 1개의 SQL만 실행할 것 !! 
+	public Map<String, String> getCount(String id) {
+		// TODO Auto-generated method stub
+		
+		try {
+			Map<String, String > map = new HashMap<String, String>();
+			String sql ="select count(*) as cnt from tblBoard where id =? ";
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, id);
+			rs = pstat.executeQuery();
+			if(rs.next()) {
+				map.put("bcount", rs.getString("cnt"));
+			}
+			
+			sql ="select count(*) as cnt from tblComment where id =? ";
+			pstat = conn.prepareStatement(sql);
+			pstat.setString(1, id);
+			rs = pstat.executeQuery();
+			if(rs.next()) {
+				map.put("ccount", rs.getString("cnt"));
+			}
+	
+			rs.close();
+			pstat.close();
+			
+			return map;
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		return null;

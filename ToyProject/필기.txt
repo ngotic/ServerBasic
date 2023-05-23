@@ -68,9 +68,20 @@ ToyProject
 			- View.java  : 
 			- Edit.java  :
 			- Del.java   :
+			- Comment.java
+			- Editcomment.java
+			- Delcomment.java
+			- Dummy.java
+			
+# ★ 댓글 쓰면 위치 고정하려고 스크롤바의 좌표값도 가지고 있었다.
+# ★ 처음 시작할 떄 스크롤바를 셋팅함
+# ★ 그래서 스크롤바를 바꾸기 싫어서 ajax로 처리한다.	> ajax쓰면 스크롤바 고정된다. 
+			
+			
 		f. com.test.toy.board.repository 
 			- BoardDAO.java
 			- BoardDTO.java
+			- CommentDTO.java
 			 
 	- 뷰
 		a. views 
@@ -109,5 +120,39 @@ ToyProject
 	- template.jsp
  - 업무별 작업
  
+ 
+ 
+ 9.x CRUD
+ 
+ 9.X 권한처리
+ 	- 목록보기, 상세보기 > 비회원O, 회원O
+ 	- 글쓰기, 수정하기, 삭제하기 > 비회원X, 회원O
+ 	- 방식 > 노출제어
+ 	- 수정하기, 삭제하기 > 비회원 X, 회원(선택적 > 자기글만)
+ 	- 수정하기, 삭제하기 > 관리자(모든글에 가능)
+ 	
+ 	
+9.X 검색하기
+1. 검색중이다 ? 아니다 ? 를 판별
+2. 내용으로? 제목으로 ? 뭘로 검색?? 
+ 
+ 
+ 
+ 9.X 페이징처리
+ rownum
+ 
+ 9.X 답변형 게시판, 계층형 계시판, 스레드 게시판
+	- thread, depth라고 만듬 값을 넣는 규칙이 있다. 
+	a. 새글 쓰기
+		1. 현존하는 모든 게시물 중에서 가장 큰 thread값을 찾아서, 그 값에 +1000을 한 값을 새글의
+		thread값으로 넣는다.
+		2. 새글의 depth는 항상 0을 넣는다.
+		
+	b. 답변글 쓰기
+		1. 현존하는 모든 게시물의 thread값을 대상으로, 현재 작성 중인 답변글의 부모글 thread값보다 
+		작고 이전 새글의 thread값보다 큰 thread를 모두 찾아서 -1을 한다. 
+		2. 답변글의 thread값을 부모글의 thread-0을 넣는다.
+		3. 답변글의 depth값을 부모글의 depth+1을 넣는다.
+
 
 

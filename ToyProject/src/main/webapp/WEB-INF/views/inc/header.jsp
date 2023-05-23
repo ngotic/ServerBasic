@@ -30,6 +30,7 @@
 		</c:if>
 		
 		<c:if test="${not empty id}">
+		<a href="/toy/user/info.do">Info</a>
 		<a href="/toy/user/unregister.do">Unregister</a>
 		<a href="/toy/user/logout.do">Logout</a>
 		</c:if>

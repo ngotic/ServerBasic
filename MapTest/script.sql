@@ -29,10 +29,13 @@ insert into tblPlaceCategory values (seqPlaceCategory.nextVal, '운동', 'defaul
 insert into tblPlaceCategory values (seqPlaceCategory.nextVal, '빵집', 'default');
 insert into tblPlaceCategory values (seqPlaceCategory.nextVal, '술집', 'default');
 select * from tblPlaceCategory;
-select * from tblPlaceCategory;
+select * from tblPlace;
 
 commit;
 
 
 select * from tblPlace;
 commit;
+
+
+SELECT * FROM PRODUCT_COMPONENT_VERSION;

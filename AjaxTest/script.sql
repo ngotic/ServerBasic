@@ -209,3 +209,7 @@ create table ajaxList
 create sequence listseq;
 select * from ajaxList;
 insert into ajaxList values(listseq.nextVal, '아무개', '010-4321-1234', '서울시 강남구');
+
+commit;
+
+select * from ajaxList order by seq;

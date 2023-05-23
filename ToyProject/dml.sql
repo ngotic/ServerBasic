@@ -14,3 +14,19 @@ insert into tblUser(id, pw, name, email, lv, pic, profile)
 commit;
 
 select * from tblUser;
+
+
+select * from (select a.*, rownum as rnum from vwBoard a )
+    where rnum between 1 and 10;
+    
+    
+select count(*) from tblBoard;
+select count(*) as cnt from vwBoard;
+    
+    
+    
+select * from tblBoard;
+select nvl(max(thread),0 ) as thread from tblBoard;
+
+    
+    

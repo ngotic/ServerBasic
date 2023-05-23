@@ -6,6 +6,7 @@
 <link rel="shortcut icon" href="/toy/asset/favicon.ico">
 <link rel="stylesheet" href="https://me2.do/5BvBFJ57">
 <link rel="stylesheet" href="/toy/asset/css/main.css">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script> 
 <script src="/toy/asset/js/main.js"></script>
+

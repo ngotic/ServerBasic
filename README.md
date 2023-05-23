@@ -1841,7 +1841,6 @@ public class EncodingFilter implements Filter{
 	<main id="main">
 		<h1>콘텐츠 제목 <small>부제</small></h1>
 		콘텐츠 내용
-	
 	</main>
 
 <script>
@@ -1850,6 +1849,149 @@ public class EncodingFilter implements Filter{
 </body>
 </html>
 ```
+
+### 권한
+* 자기가 쓴 글은 자기가 지울 수 있도록 수정, 삭제 버튼이 뜨도록 한다. 
+* 관리자는 자기가 쓴글이 아니더라도 수정, 삭제가 가능 
+* id는 세션 값이고 id와 해당 댓글의 작성자가 같을 때, 그리고 관리자 권한이면 수정삭제가능
+``` html
+<c:if test="${not empty id && (id == cdto.id || lv == '3') }">
+	<div>
+		<button type="button" class="edit" onclick="editComment(${cdto.seq});">수정</button>
+		<button type="button" class="del" onclick="delComment(${cdto.seq});">삭제</button>
+</div>
+</c:if>
+```
+
+* 필터로도 권한체크를 하는데 단, 로그인한 사용자, 그렇지 않은 사용자만 구분한다. 이것은 의도적으로 url만 알아서 해당 사이트를 침입하는것을 막으려는 목적이다.
+* Filter에선 ServletRequest, ServletResponse를 사용한다.
+* HttpServletRequest는 ServletRequest를 상속받는다. 이게 Http는 좀더 디테일한 기술적인 의미로 만약에 Http말고 다른 기술이 나오면 이것을 Http만 교체하고 ServletRequest를 그대로 상속받자는 철학임
+* 평소에 서블릿단에서 쓰는 HttpServletRequest로 형변환한다.
+``` java
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) // reqponse나 reqpuse쓸려면 형변환해라
+			throws IOException, ServletException {
+		System.out.println("권한 체크 필터 동작");
+		HttpServletRequest req = (HttpServletRequest)request;
+		HttpSession session = req.getSession();
+		
+		System.out.println(req.getRequestURI());
+		
+		if (session.getAttribute("id") == null ) { // 뒷구멍을 막는다. add.do 주소를 알아낸다 하더라도 다 막는다. 
+			if (req.getRequestURI().endsWith("add.do") || req.getRequestURI().endsWith("del.do") || req.getRequestURI().endsWith("edit.do")) {
+				PrintWriter writer = ((HttpServletResponse)response).getWriter();
+				writer.write("<script>alert('failed'); location.href='/toy/index.do'; </script>");
+				writer.close();
+				return ;
+			}
+		}
+		
+		//if(req.getRequestURI().endsWith(null)) // 내가 쓴글에 접근했다? 이건 필터로 하기 힘들다.
+		chain.doFilter(request, response);
+	}
+```
+
+### 뒷구멍 처리
+* 고객이 페이지를 사용하다가 어쩌다가 게시판 글 편집, 삭제에 대한 URL을 알게됨 
+* 그리고 이 URL에 요청 URL 쿼리스트링까지도 알아냄 결과적으로 어둠의 루트로 정보를 수정할 수 있게됨
+* 변경이 일어날 수 있는 페이지에 대한 접근처리를 막아야 한다. 
+* 예를 들어서 delete, edit, add 부분
+* 필터단에서는 회원 & 비회원을 구분한다.
+* 하지만 이친구가 현재 접속한 세션의 id, 글 주인과 같지 않다면 불법적인 요청이라 막아야 한다. 그럴 경우 아래의 로직을 넣는다. 
+``` java
+
+// 이부분을 필요한 로직에 추가 
+if( Auth.check(req, resp)) {  
+	return ;
+} 
+
+// 권한을 가진 유저를 선별하는 로직 ↓
+public class Auth {
+
+	public static boolean check(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException  {
+		
+		String seq = req.getParameter("seq");
+		HttpSession session = req.getSession();
+		BoardDAO dao = new BoardDAO();
+		BoardDTO dto = dao.get(seq); 
+		if(!session.getAttribute("id").equals(dto.getId()) && !session.getAttribute("lv").toString().equals("3")) {
+			PrintWriter writer = resp.getWriter();
+			writer.write("<script>alert('failed'); location.href='/toy/index.do'; </script>");
+			writer.close();
+			return true;
+		}
+		return false;
+	}
+}
+```
+
+### 서블릿단에서 응답이 이미 커밋되면 forward할 수 없다.
+ * writer.close(); 이후에 forward호출시 이 메시지 뜬다. > 뭔가 에러...
+ * 페이지를 만드는 업무가 중복되는 것이다. 
+ * RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/board/del.jsp"); dispatcher.forward(req, resp); ★ 이런 코드를 writer와 같이 쓰지 말 것 
+
+
+### 조회수 기능
+* 1. 읽기만 하면 무지성 증가... > 이것은 의도적으로 F5 연타로 조회수 조작하는 경우가 있음
+* 2. 하루에 1증가만 허용(계정을 구분)
+* 3. 평생 1증가만 허용(계정 구분)
+* 2와 3의 문제는 하나의 사용자가 본 글 기록을 우리는 어딘가 저장해야 한다. 세션이라든가 쿠키라든가... DB에 넣기에는 빡새다.
+* 조금은 나이브하게 무분별한 새로고침만 막자
+  * 구현 아이디어 > Session을 이용 > 글 읽음 상태를 Session에 저장 
+  * Session에 read라는 키에 y 혹은 n을 저장
+  * board페이지에선 n인데 view페이지로가면 y로 변한다. 
+  * 그러면 새로고침시에 read가 y니까 조회수가 올라가지 않게 한다. 
+  
+
+### 뒤로가기 같은 것을 구현시 history.back()과 location.href의 차이 
+* location.href은 무조건 새로운 페이지를 얻어온다. 그래서 만약에 내가 어떤 페이지에 잠시 이동해 있는 순간에 데이터의 변경이 되고 내가 다시 변경된 페이지로 돌아온경우 페이지를 새로 받아오기 때문에 데이터는 최신화 되어있다.
+* history.back()도 많이 쓰긴 한다. 캐시에다가 저장해놓은 페이지로 다시 이동한다. 타임머신을 타고 다시 과거로 가는 기분이다. 사실상 서버가 실제로 응답하는 것이 아니다. 
+* 무엇을 사용하느냐는 업무마다 다르다. 하지만 새로운 페이지를 얻어오는 것은 그만큼 요청을 한다는 말이고 캐시를 쓴다는 것은 그만큼 서버의 요청을 세이브 한다는 말.
+* 공지사항과 같은 새로운 글이 올라오는 주기가 적은 경우엔 history.back()을 쓴다. 
+
+
+
+###  스크립트 글 처리 
+* 브라우저는 html 코드 형식으로 글을 읽어서 우리에게 보여준다.
+* 게시판 기능 구현시 글을 입력하는 부분에서 사용자가 스크립트를 의도적으로 넣었을 때 우리가 아무런 처리를 안하면 문제가 된다.
+* 또한 글 자체를 입력받아버려서 엔터를 치는 경우 그것을 <br> 태그로 안보여주면 우리는 개행문자를 의식하지 못한다. -> 의도적 <br> 태그 삽입 필요 
+* 예를 들어서 10만번 도는 for문 넣어서 alert()창을 띄우면??....
+* 그래서 script를 escape 시켜야 한다. -> 스크립트가 실행되는 것을 피해야 한다.
+* 방법 1. 서버단에서 처리하자.
+  * <는 왼쪽보다 짝다. &lt; , >는 왼쪽보다 크다. &gt; 이렇게 escape를 시킨다.
+  * \r\n는 replace \<br> 이렇게 escape를 시키자. 
+``` java
+content.replace("<", "&lt;").replace(">", "&gt;").replace("\r\n", "<br>");
+1. 먼저 >,< 를 escape 시키고
+2. 개행문자를 <br>로 만든다.
+근데 이게 자바단에서 처리하는 방법이고 문제는 값을 기입하고 display 해주는 곳이 있다면 어디든지 이것을 막아야 하므로 
+
+★ <c:out value=""/> 사용을 자주 하는 것도 좋다. 
+
+```
+
+
+
+
+
+### 페이징 처리 
+
+
+
+### 댓글기능
+* 댓글은 부모 글번호를 가지고 있다.
+* 글이나 게시판 모두 id정보를 가지고 있는데 이것은 회원 테이블의 key이다. 테이블들 사이에서 중복되는 칼럼인데 사실이게 PK, FK 관계이다. 
+<img src="./imgs/회댓글.PNG">
+
+### 글삭제 기능 구현시...
+* 글 > 댓글은 DB에서 부모 자식의 테이블 구조이다. 
+* 
+
+
+# ★★★★★ 페이징 아이디어 
+* 
+
+## ★ 항상 어떤 데이터가 이전 단에서 전송되는지 확인하기
 
 ## 잡다한 팁
 
@@ -1866,10 +2008,12 @@ public class EncodingFilter implements Filter{
   * ★ 동일 에러번호가 떴다고해서 같은 이유로 나는 에러가 아니다.
   * jsp에서 \` \`안에 $를 넣을 때 template String 안에 escape시키기
   * 변수를 안에다 채우겠다라는 의미임 \<td> 나 \<div> 태그 안에 텍스트 넣는 경우 이렇게 함 
-    * ex) <div>\${$(item).find('seq').text()}</div>
-      * 여기선 가장 바깥 $에 escape를 시킨다. 안쪽의 $는 jquery다. 
-      * 아래의 코드에서 차이를 파악하기 
+  * 아래의 코드에서 차이를 파악하기 
 ```js
+
+<div>\${$(item).find('seq').text()}</div>
+// 여기선 가장 바깥 $에 escape를 시킨다. 안쪽의 $는 jquery다. 
+
 let name= '홍길동';
 console.log(`name : ${name}`);  // EL로 인식해서 EL을 사용할 때 이방식을 사용 
 console.log(`name : \${name}`); // 위의 변수로 인식, 변수를 채울 때 이 방식을 사용
@@ -1953,3 +2097,4 @@ URLDecoder.decode(encodeData, "UTF-8");
       });
   });
   ```
+  * 쿼리스트링으로 한글을 인코딩하지 않고 넣어주는 경우 다음 동작이 되지 않는 경우가 있다. 보통은 데이터를 객체화해서 뷰단으로 넘겨주는 경우가 많다. 이런 경우에는 한글?을 고려하지 않지만 쿼리스트링에 한글이 들어가는 경우 URLEncoder.encode를 고려해주자.... msg 같은거...
