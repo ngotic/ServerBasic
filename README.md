@@ -1997,7 +1997,7 @@ content.replace("<", "&lt;").replace(">", "&gt;").replace("\r\n", "<br>");
 
 ## ★★★★★ 페이징 아이디어 
 * 그림을 그릴 줄 알고 계산을 해야함 > 변수만 대충 뽑아내면 윤곽이 잡힙 
-<img src="./imgs/page_idea.PNG" width=80%>
+	<img src="./imgs/page_idea.PNG" width=80%>
 * ★ 많은 글을 어떻게 처리할 것인가에 대한 idea
 * <b>필요한 변수 </b>
 * <b>totalCount</b> : 몇개의 글이 있냐? 
@@ -2242,7 +2242,7 @@ URLDecoder.decode(encodeData, "UTF-8");
   * ★ ?page=5&column=&word= >"" key만 있으면 빈문자열 string함수 처리는 되것네? 
   * navFlex 처리> 아이콘 위치처리, 배치처리
   
- <img src="./imgs/navFlex.PNG" width=60%>
+ 	<img src="./imgs/navFlex.PNG" width=60%>
 
   * $(event.target).closest('tr').remove(); // closest는 가장 가까운 해당 요소를 찾는다.. 
   * form 태그는 $('#editCommentForm').submit();
