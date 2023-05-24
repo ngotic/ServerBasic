@@ -50,7 +50,7 @@ public class UserDAO {
 
 	public UserDTO login(UserDTO dto) {
 		try {
-			String sql = "select * from tblUser where id = ? and pw = ?";
+			String sql = "select * from tblUser where id = ? and pw = ?  and ing='y'";
 			
 			pstat = conn.prepareStatement(sql);
 			pstat.setString(1, dto.getId());
@@ -138,6 +138,25 @@ public class UserDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+
+	public int unregister(String id) {
+		
+		try {
+			String sql = "update tblUser set pw='x', name='x', email='x',pic='x',profile='x', ing='x' where id = ?";
+			
+			pstat = conn.prepareStatement(sql);
+			
+			pstat.setString(1, id);
+
+			return pstat.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 
 }

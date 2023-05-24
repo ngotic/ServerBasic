@@ -2,16 +2,20 @@
 
 
 drop table tblUser;
+
 -- 회원
 create table tblUser(
-    id varchar2(50) primary key,
+    id varchar2(50) primary key,  
     pw varchar2(50) not null,
     name varchar2(50) not null,
     email varchar2(100) not null,
     lv char(1) not null,
     pic varchar2(100) default 'pic.png' not null ,
-    profile varchar2(500) not null
+    profile varchar2(500) not null,
+    ing char(1) default 'y' not null -- 탈퇴(n)
 );
+
+alter table tblUser add (ing char(1) default 'y' not null); -- default주니까 기존거는 다 y이다. 
 
 -- 게시판
 create table tblBoard(
@@ -101,3 +105,64 @@ create table tblBoard(
 );
 
 select * from tblBoard;
+
+select * from tblUser;
+
+select * from tblPlace;
+drop table tblPlace;
+create table tblPlace (
+    seq number primary key,
+    name varchar2(100) not null,
+    content varchar2(1000) not null,
+    pic varchar2(100) not null,
+    regdate date default sysdate not null,
+    id varchar2(50) not null references tblUser(id)
+);
+drop sequence seqPlace;
+create sequence seqPlace;
+
+
+create table tblHashTag (
+    seq number primary key,
+    tag varchar2(100) not null
+);
+
+create sequence seqHashTag;
+
+create table tblPlaceHashTag (
+    seq number primary key,
+    pseq number not null references tblPlace(seq),
+    hseq number not null references tblHashTag(seq)
+);
+
+create sequence seqPlaceHashTag;
+
+select * from tblPlaceHashTag;
+select * from tblHashTag;
+
+
+select 
+    tblPlace.*, 
+    (select name from tblUser where id = tblPlace.id) as uname
+from tblPlace
+    where seq in (1, 2, 3)
+    order by seq desc;
+    
+select 
+    tblPlace.*, 
+    (select name from tblUser where id = tblPlace.id) as uname 
+from tblPlace 
+    where seq in (select pseq from tblPlaceHashTag
+                where hseq = (select seq from tblHashTag where tag = '애완동물' and rownum = 1))
+    order by seq desc;
+    
+delete from tblPlaceHashTag;
+delete from tblHashTag;
+delete from tblPlace;
+
+commit;
+
+select * from tblPlaceHashTag ;
+select * from tblHashTag ;
+select * from tblPlace ;
+

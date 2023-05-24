@@ -47,6 +47,10 @@ ToyProject
  			클래스 파일 50개 ~ 100개
  		d. com.test.toy.board  : 게시판
  		e. com.test.toy.board.repository : DB
+ 		f. com.test.toy.filter: 필터
+ 		g. com.test.toy.place
+ 		h. com.test.toy.place.repository 
+ 		
  	- 파일
  		a. com.test.toy 
  			- Index.java    : 시작 페이지 
@@ -72,6 +76,13 @@ ToyProject
 			- Editcomment.java
 			- Delcomment.java
 			- Dummy.java
+		g. com.test.toy.place
+			- Place.java : 목록보기
+			- AddPlace.java : 추가하기
+			- View.java : 상세보기
+		h. com.test.toy.place.repository
+			- PlaceDAO.java
+			- PlaceDTO.java
 			
 # ★ 댓글 쓰면 위치 고정하려고 스크롤바의 좌표값도 가지고 있었다.
 # ★ 처음 시작할 떄 스크롤바를 셋팅함
@@ -102,7 +113,12 @@ ToyProject
 			- view.jsp
 			- del.jsp
 		
-		
+		e. views 
+			- place.jsp
+			- addplace.jsp
+			- view.jsp
+			
+			
 			- 라이브러리 
 				lib - 
 					AjaxTest > 7개 복사
@@ -113,6 +129,7 @@ ToyProject
 				- webapp > asset > pic : 회원 프로필 사진 폴더
 				- webapp > asset
 							- favicon.ico
+				- webapp > asset > place : 장소 사진 폴더 
 		
 		
 9.1 레이아웃

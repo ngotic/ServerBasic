@@ -12,7 +12,6 @@
 			<span class="material-symbols-outlined">toys</span>
 		</c:if>
 		
-		
 		<c:if test="${not empty id and lv == 1}">
 			<span style="color: cornflowerblue;">Toy</span>
 		</c:if>
@@ -34,6 +33,7 @@
 		<a href="/toy/user/unregister.do">Unregister</a>
 		<a href="/toy/user/logout.do">Logout</a>
 		</c:if>
+		<a href="/toy/place/place.do">Place</a>
 		<a href="/toy/board/board.do">Board</a>
 	</nav>
 </header>

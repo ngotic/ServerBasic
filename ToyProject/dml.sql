@@ -28,5 +28,5 @@ select count(*) as cnt from vwBoard;
 select * from tblBoard;
 select nvl(max(thread),0 ) as thread from tblBoard;
 
-    
+select * from (select a.*, rownum as rnum from vwBoard a ) where rnum between 1 and 10
     
